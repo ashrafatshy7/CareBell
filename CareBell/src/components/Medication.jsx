@@ -2,85 +2,107 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function Medication() {
-  /*A specific user. Will be changed */
-  const userId = "U12345";
+  /* ===== CONFIG ===== */
+  const userId = "U12345";               
+  const API    = "https://localhost:4000";  
+  /* ===== STATE ===== */
+  const [meds, setMeds]     = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error,   setError]   = useState(null);
 
-  /* ---------- state ---------- */
-  const [meds,      setMeds]      = useState([]);
-  const [loading,   setLoading]   = useState(true);
-  const [error,     setError]     = useState(null);
-
-  /* Add-Medication */
-  const [isAdding,  setIsAdding]  = useState(false);
-  const [saving,    setSaving]    = useState(false);
-  const [form,      setForm]      = useState({
-    name:        "",
-    dosage:      "",
-    frequency:   "",
-    lastTaken:   "",
-    nextDue:     "",
+  /* add-form */
+  const [isAdding, setIsAdding] = useState(false);
+  const [saving,   setSaving]   = useState(false);
+  const [form,     setForm]     = useState({
+    name: "", dosage: "", frequency: "", lastTaken: "", nextDue: "",
   });
 
-  /* ---------- fetch once ---------- */
+  /* confirmations */
+  const [confirmDeleteId, setConfirmDeleteId] = useState(null);
+  const [confirmTakeId,   setConfirmTakeId]   = useState(null);
+
+  /* Timer – to enable the button an hour before taking the medicine*/
+  const [nowTick, setNowTick] = useState(Date.now());
+  useEffect(() => {
+    const id = setInterval(() => setNowTick(Date.now()), 60_000); // דקה
+    return () => clearInterval(id);
+  }, []);
+
+  /* ===== FETCH ===== */
   useEffect(() => {
     axios
-      .get(`https://localhost:4000/medications/getAll/${userId}`)
-      .then((res) => setMeds(res.data))
-      .catch((err) => setError(err.message))
+      .get(`${API}/medications/getAll/${userId}`)
+      .then((r) => setMeds(r.data))
+      .catch((e) => setError(e.message))
       .finally(() => setLoading(false));
   }, [userId]);
 
-  /* ---------- mark as taken ---------- */
-  const markTaken = (index, id) => {
+  /* ===== HELPERS ===== */
+  const calcNextISO = (hrs) =>
+    !isNaN(hrs) ? new Date(Date.now() + hrs * 3_600_000).toISOString() : null;
+
+  const isWithinWindow = (nextIso) => {
+    if (!nextIso) return true;
+    const diff = new Date(nextIso).getTime() - nowTick;        // ms עד למנה
+    return diff <= 3_600_000 || diff < 0;                      // ≤ שעה לפני או אחרי
+  };
+
+  /* ===== MARK AS TAKEN ===== */
+  const markTakenNow = (index, id) => {
+    const nowISO  = new Date().toISOString();
+    const hrs     = parseInt(meds[index].frequency);
+    const nextISO = calcNextISO(hrs);
+
+    /* UI */
     setMeds((prev) => {
-      const updated      = [...prev];
-      updated[index]     = { ...updated[index], taken: true, lastTaken: new Date().toISOString() };
-      return updated;
+      const upd = [...prev];
+      upd[index] = { ...upd[index], taken: true, lastTaken: nowISO, nextDue: nextISO ?? upd[index].nextDue };
+      return upd;
     });
 
-    axios.put(`https://localhost:4000/medications/markTaken/${id}`).catch(console.error);
+    /* PATCH to DB */
+    axios.patch(`${API}/medications/${id}/updateLastTaken`, { lastTaken: nowISO }).catch(console.error);
+    if (nextISO)
+      axios.patch(`${API}/medications/${id}/updateNextDue`, { nextDue: nextISO }).catch(console.error);
   };
 
-  /* ---------- Add-Medication handlers ---------- */
-  const handleChange = (e) =>
-    setForm({ ...form, [e.target.name]: e.target.value });
+  /* ===== ADD ===== */
+  const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
-  const handleSave = () => {
-    if (!form.name || !form.dosage) {
-      alert("Please fill required fields");
-      return;
-    }
+  const saveMedication = () => {
+    if (!form.name || !form.dosage) return alert("Name & dosage required");
     setSaving(true);
     axios
-      .post("https://localhost:4000/medications/addMedication", {
-        userId,
-        ...form,
-      })
-      .then((res) => {
-        setMeds((prev) => [...prev, res.data]);
+      .post(`${API}/medications/addMedication`, { userId, ...form })
+      .then((r) => setMeds((p) => [...p, r.data]))
+      .catch((e) => alert(e.response?.data?.message || e.message))
+      .finally(() => {
+        setSaving(false);
         setIsAdding(false);
         setForm({ name: "", dosage: "", frequency: "", lastTaken: "", nextDue: "" });
-      })
-      .catch((err) => alert(err.response?.data?.message || err.message))
-      .finally(() => setSaving(false));
+      });
   };
 
-  const handleCancel = () => {
-    setIsAdding(false);
-    setForm({ name: "", dosage: "", frequency: "", lastTaken: "", nextDue: "" });
+  /* ===== DELETE ===== */
+  const askDelete     = (id) => setConfirmDeleteId(id);
+  const cancelDelete  = ()  => setConfirmDeleteId(null);
+  const confirmDelete = (id) => {
+    axios
+      .delete(`${API}/medications/${id}`)
+      .then(() => setMeds((p) => p.filter((m) => m._id !== id)))
+      .catch((e) => alert(e.response?.data?.message || e.message))
+      .finally(() => setConfirmDeleteId(null));
   };
 
-  /* ---------- conditional ---------- */
+  /* ===== RENDER ===== */
   if (loading) return <p className="text-center">Loading…</p>;
   if (error)   return <p className="text-center text-red-600">{error}</p>;
 
-  /* ---------- JSX ---------- */
   return (
     <div className="min-h-screen bg-slate-400 p-6">
-      {/* Label + the bottun position*/}
+      {/* HEADER */}
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-3xl font-bold text-gray-800">Medication</h2>
-
         {!isAdding && (
           <button
             onClick={() => setIsAdding(true)}
@@ -91,42 +113,33 @@ export default function Medication() {
         )}
       </div>
 
-      {/* Add form*/}
+      {/* ADD FORM */}
       {isAdding && (
         <div className="max-w-md mx-auto bg-white rounded-2xl shadow-md p-6 mb-6 space-y-6">
           {[
-            { label: "Medication Name", name: "name", placeholder: "Aspirin", required: true },
-            { label: "Dosage",          name: "dosage", placeholder: "100 mg", required: true },
-            { label: "Frequency",       name: "frequency", placeholder: "Twice a day" },
-            { label: "Last Taken (ISO)",name: "lastTaken", placeholder: "2025-05-08T08:00" },
-            { label: "Next Due (ISO)",  name: "nextDue", placeholder: "2025-05-08T20:00" },
+            { lbl: "Medication Name *", name: "name",        placeholder: "Aspirin" },
+            { lbl: "Dosage *",          name: "dosage",      placeholder: "100 mg" },
+            { lbl: "Frequency (hours)", name: "frequency",   placeholder: "8" },
           ].map((f) => (
             <div key={f.name}>
-              <label className="block text-lg font-semibold text-gray-700">
-                {f.label}{f.required && " *"}
-              </label>
+              <label className="block text-lg font-semibold text-gray-700">{f.lbl}</label>
               <input
                 name={f.name}
                 value={form[f.name]}
                 onChange={handleChange}
                 placeholder={f.placeholder}
-                className="mt-2 w-full rounded-md
-                           border-2 border-blue-900
-                           focus:border-blue-700 focus:ring-blue-700
-                           text-lg px-4 py-3"
+                className="mt-2 w-full rounded-md border-2 border-blue-900
+                           focus:border-blue-700 focus:ring-blue-700 text-lg px-4 py-3"
               />
             </div>
           ))}
 
           <div className="flex justify-end gap-4">
-            <button
-              onClick={handleCancel}
-              className="px-5 py-2 rounded-xl bg-gray-300 hover:bg-gray-400 transition text-lg"
-            >
+            <button onClick={() => setIsAdding(false)} className="px-5 py-2 rounded-xl bg-gray-300 hover:bg-gray-400 transition text-lg">
               Cancel
             </button>
             <button
-              onClick={handleSave}
+              onClick={saveMedication}
               disabled={saving}
               className="px-6 py-2 rounded-xl text-white font-semibold transition
                          bg-blue-900 hover:bg-blue-700 disabled:opacity-60 text-lg"
@@ -137,34 +150,87 @@ export default function Medication() {
         </div>
       )}
 
-      {/* List of medications*/}
+      {/* LIST */}
       <div className="grid gap-6 max-w-md mx-auto">
-        {meds.map((m, i) => (
-          <div
-            key={m._id}
-            className="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-2"
-          >
-            <div className="text-xl font-semibold text-gray-900">{m.name}</div>
-            <div className="text-gray-700 text-sm">Dosage: {m.dosage}</div>
-            {m.frequency && <div className="text-gray-700 text-sm">Frequency: {m.frequency}</div>}
-            <div className="text-gray-600 text-sm">
-              Last taken:&nbsp;
-              {m.lastTaken ? new Date(m.lastTaken).toLocaleString() : "Never"}
-            </div>
+        {meds.map((m, i) => {
+          const canTake = !m.taken && isWithinWindow(m.nextDue);
+          return (
+            <div key={m._id} className="bg-white rounded-2xl shadow-md p-6 flex flex-col gap-3">
+              <div className="text-xl font-semibold text-gray-900">{m.name}</div>
+              <div className="text-gray-700 text-sm">Dosage: {m.dosage}</div>
+              {m.frequency && <div className="text-gray-700 text-sm">Frequency: every {m.frequency}h</div>}
+              <div className="text-gray-600 text-sm">
+                Last taken:&nbsp;{m.lastTaken ? new Date(m.lastTaken).toLocaleString() : "Never"}
+              </div>
+              {m.nextDue && (
+                <div className="text-gray-600 text-sm">
+                  Next due:&nbsp;{new Date(m.nextDue).toLocaleString()}
+                </div>
+              )}
 
-            <button
-              onClick={() => markTaken(i, m._id)}
-              disabled={m.taken}
-              className={`mt-2 py-2 px-4 rounded-xl text-white font-semibold transition ${
-                m.taken
-                  ? "bg-gray-400 cursor-not-allowed"
-                  : "bg-blue-900 hover:bg-blue-700"
-              }`}
-            >
-              {m.taken ? "Already Taken" : "Mark as Taken"}
-            </button>
-          </div>
-        ))}
+              {/* BUTTON BLOCK */}
+              {confirmDeleteId === m._id ? (
+                /* delete confirm */
+                <div className="flex flex-col gap-3">
+                  <span className="text-gray-800">Delete <b>{m.name}</b>?</span>
+                  <div className="flex gap-4">
+                    <button onClick={() => confirmDelete(m._id)} className="flex-1 bg-red-600 hover:bg-red-500 text-white py-2 rounded-lg text-lg">
+                      Yes, delete
+                    </button>
+                    <button onClick={cancelDelete} className="flex-1 bg-gray-300 hover:bg-gray-400 py-2 rounded-lg text-lg">
+                      No, keep
+                    </button>
+                  </div>
+                </div>
+              ) : confirmTakeId === m._id ? (
+                /* take confirm */
+                <div className="flex flex-col gap-3">
+                  <span className="text-gray-800">Confirm you just took <b>{m.name}</b>?</span>
+                  <div className="flex gap-4">
+                    <button
+                      onClick={() => {
+                        setConfirmTakeId(null);
+                        markTakenNow(i, m._id);
+                      }}
+                      className="flex-1 bg-blue-900 hover:bg-blue-700 text-white py-2 rounded-lg text-lg"
+                    >
+                      Yes, taken
+                    </button>
+                    <button
+                      onClick={() => setConfirmTakeId(null)}
+                      className="flex-1 bg-gray-300 hover:bg-gray-400 py-2 rounded-lg text-lg"
+                    >
+                      No, cancel
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                /* normal buttons */
+                <div className="flex gap-4">
+                  <button
+                    onClick={() => askDelete(m._id)}
+                    className="flex-1 text-lg font-semibold text-white bg-red-600 hover:bg-red-500
+                               border-2 border-red-700 rounded-xl py-2 transition"
+                  >
+                    Delete
+                  </button>
+
+                  <button
+                    onClick={() => setConfirmTakeId(m._id)}
+                    disabled={!canTake}
+                    className={`flex-1 text-lg font-semibold text-white rounded-xl py-2 transition ${
+                      canTake
+                        ? "bg-blue-900 hover:bg-blue-700 border-2 border-blue-950"
+                        : "bg-gray-400 cursor-not-allowed border-2 border-gray-500"
+                    }`}
+                  >
+                    {m.taken ? "Taken" : "Mark as Taken"}
+                  </button>
+                </div>
+              )}
+            </div>
+          );
+        })}
       </div>
     </div>
   );
