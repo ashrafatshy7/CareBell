@@ -178,7 +178,7 @@ export default function CallContacts() {
                 <div className="flex gap-4">
                   <button
                     onClick={() => confirmDelete(c._id)}
-                    className="flex-1 bg-red-600 hover:bg-red-500 text-white py-2 rounded-lg text-lg"
+                    className="flex-1 bg-gray-600 hover:bg-red-500 text-white py-2 rounded-lg text-lg"
                   >
                     Yes, delete
                   </button>
@@ -193,14 +193,6 @@ export default function CallContacts() {
             ) : (
               /* ----- Normal Row ----- */
               <div className="flex gap-4">
-                <button
-                  onClick={() => askDelete(c._id)}
-                  className="flex-1 text-lg font-semibold text-white
-                             bg-red-600 hover:bg-red-500
-                             border-2 border-red-700 rounded-xl py-2 transition"
-                >
-                  Delete
-                </button>
                 <a
                   href={`tel:${c.phoneNumber}`}
                   className="flex-1 text-lg font-semibold text-white
@@ -210,6 +202,14 @@ export default function CallContacts() {
                 >
                   Call
                 </a>
+                <button
+                  onClick={() => askDelete(c._id)}
+                  className="bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-900
+                               border border-gray-900 rounded-md
+                               hover:bg-red-100 transition"
+                >
+                  Delete
+                </button>
               </div>
             )}
           </div>

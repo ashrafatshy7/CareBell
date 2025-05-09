@@ -174,7 +174,7 @@ export default function Medication() {
                 <div className="flex flex-col gap-3">
                   <span className="text-gray-800">Delete <b>{m.name}</b>?</span>
                   <div className="flex gap-4">
-                    <button onClick={() => confirmDelete(m._id)} className="flex-1 bg-red-600 hover:bg-red-500 text-white py-2 rounded-lg text-lg">
+                    <button onClick={() => confirmDelete(m._id)} className="flex-1 bg-gray-600 hover:bg-red-500 text-white py-2 rounded-lg text-lg">
                       Yes, delete
                     </button>
                     <button onClick={cancelDelete} className="flex-1 bg-gray-300 hover:bg-gray-400 py-2 rounded-lg text-lg">
@@ -207,14 +207,7 @@ export default function Medication() {
               ) : (
                 /* normal buttons */
                 <div className="flex gap-4">
-                  <button
-                    onClick={() => askDelete(m._id)}
-                    className="flex-1 text-lg font-semibold text-white bg-red-600 hover:bg-red-500
-                               border-2 border-red-700 rounded-xl py-2 transition"
-                  >
-                    Delete
-                  </button>
-
+                  {/* Mark as Taken – main big button*/}
                   <button
                     onClick={() => setConfirmTakeId(m._id)}
                     disabled={!canTake}
@@ -225,6 +218,16 @@ export default function Medication() {
                     }`}
                   >
                     {m.taken ? "Taken" : "Mark as Taken"}
+                  </button>
+
+                  {/* Delete button style*/}
+                  <button
+                    onClick={() => askDelete(m._id)}
+                    className="bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-900
+                               border border-gray-900 rounded-md
+                               hover:bg-red-100 transition"
+                  >
+                    Delete
                   </button>
                 </div>
               )}
