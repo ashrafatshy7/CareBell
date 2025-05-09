@@ -1,4 +1,5 @@
 import React from "react";
+import Bella from "./Bella";
 
 export default function LeftSide() {
   return (
@@ -6,7 +7,7 @@ export default function LeftSide() {
       id="leftSide"
       className="w-full md:w-2/5 flex flex-col items-center mt-20"
     >
-      {/* WIP: Bella’s avatar, status, etc. */}
+      <Bella/>
     </div>
   );
 }
