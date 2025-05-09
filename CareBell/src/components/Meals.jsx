@@ -1,4 +1,3 @@
-// src/components/Exercise.jsx
 import React from "react";
 
 function Meals() {

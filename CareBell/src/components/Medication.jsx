@@ -1,9 +1,8 @@
-// src/components/Medication.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
 export default function Medication() {
-  /* ← החליפי ב-ID האמיתי (Context / Login) */
+  /*A specific user. Will be changed */
   const userId = "U12345";
 
   /* ---------- state ---------- */
@@ -11,7 +10,7 @@ export default function Medication() {
   const [loading,   setLoading]   = useState(true);
   const [error,     setError]     = useState(null);
 
-  /* טופס Add-Medication */
+  /* Add-Medication */
   const [isAdding,  setIsAdding]  = useState(false);
   const [saving,    setSaving]    = useState(false);
   const [form,      setForm]      = useState({
@@ -92,7 +91,7 @@ export default function Medication() {
         )}
       </div>
 
-      {/* טופס הוספה */}
+      {/* Add form*/}
       {isAdding && (
         <div className="max-w-md mx-auto bg-white rounded-2xl shadow-md p-6 mb-6 space-y-6">
           {[
@@ -138,7 +137,7 @@ export default function Medication() {
         </div>
       )}
 
-      {/* רשימת תרופות */}
+      {/* List of medications*/}
       <div className="grid gap-6 max-w-md mx-auto">
         {meds.map((m, i) => (
           <div
