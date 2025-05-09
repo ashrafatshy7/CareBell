@@ -63,4 +63,59 @@ router.post('/addMedication', async (req, res) => {
     }
 });
 
+
+
+router.delete('/:id', async (req, res) => {
+    try {
+        const deletedMed = await Medication.findByIdAndDelete(req.params.id);
+
+        if (!deletedMed) {
+            return res.status(404).json({ message: 'Medication not found' });
+        }
+
+        res.json({ message: 'Medication deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
+
+router.patch('/:id/updateLastTaken', async (req, res) => {
+    try {
+        const { lastTaken } = req.body;
+        const updatedMed = await Medication.findByIdAndUpdate(
+            req.params.id,
+            { lastTaken },
+            { new: true }
+        );
+
+        if (!updatedMed) {
+            return res.status(404).json({ message: 'Medication not found' });
+        }
+
+        res.json(updatedMed);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+router.patch('/:id/updateNextDue', async (req, res) => {
+    try {
+        const { nextDue } = req.body;
+        const updatedMed = await Medication.findByIdAndUpdate(
+            req.params.id,
+            { nextDue },
+            { new: true }
+        );
+
+        if (!updatedMed) {
+            return res.status(404).json({ message: 'Medication not found' });
+        }
+
+        res.json(updatedMed);
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+});
+
+
 module.exports = router;
