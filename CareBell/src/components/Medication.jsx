@@ -24,7 +24,7 @@ export default function Medication() {
   /* Timer – to enable the button an hour before taking the medicine*/
   const [nowTick, setNowTick] = useState(Date.now());
   useEffect(() => {
-    const id = setInterval(() => setNowTick(Date.now()), 60_000); // דקה
+    const id = setInterval(() => setNowTick(Date.now()), 60_000); // A minute
     return () => clearInterval(id);
   }, []);
 
@@ -43,8 +43,8 @@ export default function Medication() {
 
   const isWithinWindow = (nextIso) => {
     if (!nextIso) return true;
-    const diff = new Date(nextIso).getTime() - nowTick;        // ms עד למנה
-    return diff <= 3_600_000 || diff < 0;                      // ≤ שעה לפני או אחרי
+    const diff = new Date(nextIso).getTime() - nowTick;        
+    return diff <= 3_600_000 || diff < 0;                   //A hour before and after the nextDue   
   };
 
   /* ===== MARK AS TAKEN ===== */

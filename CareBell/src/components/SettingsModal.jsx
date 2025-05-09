@@ -1,4 +1,3 @@
-// src/components/SettingsModal.jsx
 import React, { useEffect, useState } from "react";
 import { FaVolumeMute, FaVolumeUp, FaRunning, FaTachometerAlt } from "react-icons/fa";
 
@@ -56,7 +55,7 @@ export default function SettingsModal({ onClose }) {
               max={100}
               defaultValue={70}
               className="flex-1 accent-blue-600 h-2 rounded-lg bg-gray-300"
-              disabled      /* ← ל-UI בלבד כרגע */
+              disabled      /* only for UI. in the future it will be implemented*/
             />
             <FaVolumeUp className="text-2xl" />
           </div>
@@ -74,7 +73,7 @@ export default function SettingsModal({ onClose }) {
               step={0.1}
               defaultValue={1}
               className="flex-1 accent-blue-600 h-2 rounded-lg bg-gray-300"
-              disabled      /* ← שמור לביצוע עתידי */
+              disabled      /* for the future */
             />
             <FaRunning className="text-2xl" />
           </div>

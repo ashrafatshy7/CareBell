@@ -1,7 +1,7 @@
 // src/components/Header.jsx
 import React, { useEffect, useState } from "react";
 import logo from "../resources/Logo_Gold_Blau_Rubik.png";
-import SettingsModal from "./SettingsModal";      // ⇠ המודל החדש
+import SettingsModal from "./SettingsModal";     
 
 const OPENWEATHER_KEY = "6d3ad80f32ae07a071aeb542a0049d46";
 const WEATHER_API     = "https://api.openweathermap.org/data/2.5/weather";
