@@ -1,57 +1,88 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import logo from "../resources/Logo_Gold_Blau_Rubik.png";
 
+const OPENWEATHER_KEY = "6d3ad80f32ae07a071aeb542a0049d46";
+const WEATHER_API     = "https://api.openweathermap.org/data/2.5/weather";
+
 export default function Header() {
-  // local state for date & time strings
-  const [currentDate, setCurrentDate] = useState("");
-  const [currentTime, setCurrentTime] = useState("");
+  /* ---- Date & Time ---- */
+  const [dateStr, setDateStr] = useState("");
+  const [timeStr, setTimeStr] = useState("");
 
+  /* ---- Weather ---- */
+  const [temp,  setTemp]  = useState(null);   // °C
+  const [icon,  setIcon]  = useState(null);   // "01d"…
+  const [wErr,  setWErr]  = useState(null);
+
+  /* === clock === */
   useEffect(() => {
-    const dateOpts = {
-      weekday: "long",
-      year: "numeric",
-      month: "long",
-      day: "numeric",
-    };
-    const timeOpts = { hour: "2-digit", minute: "2-digit", hour12: false };
-
-    function updateDateTime() {
+    const upd = () => {
       const now = new Date();
-      setCurrentDate(now.toLocaleDateString("en-US", dateOpts));
-      setCurrentTime(now.toLocaleTimeString("en-US", timeOpts));
+      setDateStr(now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" }));
+      setTimeStr(now.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false }));
+    };
+    upd();
+    const id = setInterval(upd, 60_000);
+    return () => clearInterval(id);
+  }, []);
+
+  /* === weather === */
+  useEffect(() => {
+    if (!navigator.geolocation) {
+      setWErr("Geo unavailable");
+      return;
     }
 
-    // run once immediately, then every second
-    updateDateTime();
-    const intervalId = setInterval(updateDateTime, 1000);
-    return () => clearInterval(intervalId);
+    navigator.geolocation.getCurrentPosition(
+      ({ coords }) => {
+        const url = `${WEATHER_API}?lat=${coords.latitude}&lon=${coords.longitude}&units=metric&appid=${OPENWEATHER_KEY}`;
+        fetch(url)
+          .then(r => r.json())
+          .then(data => {
+            if (data.cod !== 200) throw new Error(data.message);
+            setTemp(Math.round(data.main.temp));
+            setIcon(data.weather[0].icon);
+          })
+          .catch(err => setWErr(err.message));
+      },
+      err => setWErr(err.message),
+      { timeout: 5000 }
+    );
   }, []);
 
   return (
     <header className="flex justify-between items-center py-4 px-2 border-b border-blue-800">
-      {/* React-driven date/time */}
-      <div className="flex items-baseline space-x-4">
-        <div className="text-2xl font-bold">{currentDate}</div>
-        <div className="text-2xl font-bold">{currentTime}</div>
+      {/* date / time / weather */}
+      <div className="flex items-center space-x-6">
+        <div className="flex flex-col leading-none">
+          <span className="text-2xl font-bold">{dateStr}</span>
+          <span className="text-2xl font-bold">{timeStr}</span>
+        </div>
+
+        {/* weather */}
+        {icon && temp !== null ? (
+          <div className="flex items-center space-x-2">
+            <img
+              src={`https://openweathermap.org/img/wn/${icon}@2x.png`}
+              alt="Weather icon"
+              className="h-10 w-10"
+            />
+            <span className="text-2xl font-bold">{temp}°C</span>
+          </div>
+        ) : (
+          wErr && <span className="text-sm text-red-600">{wErr}</span>
+        )}
       </div>
 
-      {/* Logo */}
-      <div>
-        <img src={logo} className="h-18 w-48" alt="CareBell Logo" />
-      </div>
+      {/* logo */}
+      <img src={logo} alt="CareBells Logo" className="h-16" />
 
-      {/* Buttons */}
-      <div className="flex flex-nowrap items-center space-x-4">
-        <button
-          id="settingsBtn"
-          className="flex-shrink-0 bg-gray-200 p-3 rounded-full font-bold"
-        >
+      {/* buttons (settings + emergency) */}
+      <div className="flex items-center space-x-4">
+        <button className="flex-shrink-0 bg-gray-200 p-3 rounded-full font-bold">
           <i className="fas fa-cog"></i> Settings
         </button>
-        <button
-          id="emergencyBtn"
-          className="flex-shrink-0 bg-red-500 text-white font-bold py-3 px-6 rounded-xl"
-        >
+        <button className="flex-shrink-0 bg-red-500 text-white font-bold py-3 px-6 rounded-xl">
           Emergency
         </button>
       </div>
