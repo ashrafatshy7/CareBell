@@ -1,4 +1,3 @@
-// src/App.jsx
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -18,7 +17,6 @@ export default function App() {
         <div id="mainContent" className="flex-1 flex flex-col md:flex-row gap-8">
           <LeftSide />
 
-          {/* זה המקום שבו הכפתורים נשארים */}
           <RightSide />
         </div>
       </div>
