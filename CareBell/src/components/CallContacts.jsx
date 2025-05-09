@@ -1,4 +1,3 @@
-// src/components/CallContacts.jsx
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 
@@ -60,7 +59,7 @@ export default function CallContacts() {
   /* ---------- JSX ---------- */
   return (
     <div className="min-h-screen bg-slate-400 p-6">
-      {/* כותרת + כפתור הוספה בקצה ימין */}
+      {/* Title + Add button on the right edge*/}
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-3xl font-bold text-gray-800">Call Contacts</h2>
 
@@ -74,7 +73,7 @@ export default function CallContacts() {
         )}
       </div>
 
-      {/* טופס הוספה */}
+      {/* Adding form*/}
       {isAdding && (
         <div className="max-w-md mx-auto bg-white rounded-2xl shadow-md p-6 mb-6 space-y-6">
           {/* full name */}
@@ -148,7 +147,7 @@ export default function CallContacts() {
         </div>
       )}
 
-      {/* רשימת אנשי קשר */}
+      {/* List of contacts*/}
       <div className="grid gap-6 max-w-md mx-auto">
         {contacts.map((c) => (
           <div

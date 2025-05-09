@@ -1,4 +1,3 @@
-// src/components/RightSide.jsx
 import React from "react";
 import {
   FaPhone,
@@ -18,7 +17,7 @@ import Meals         from "./Meals";
 import News          from "./News";
 import Exercise      from "./Exercise";
 
-// הגדרת רשימת הכפתורים + הנתיב אליו ננווט
+//Setting the button list + the path to navigate to
 const MENU_BUTTONS = [
   { label: "Call Contacts",    icon: FaPhone,    to: "call-contacts" },
   { label: "Meet With Friends", icon: FaUsers,    to: "meet-with-friends"  },
@@ -31,7 +30,7 @@ const MENU_BUTTONS = [
 export default function RightSide() {
   const navigate = useNavigate();
 
-  // קומפוננטה קטנה להצגת הלחצן חזרה + התוכן
+  // A small component to display the back button + content
   function PageWrapper({ children, title }) {
     return (
       <div className="space-y-4">
@@ -61,7 +60,7 @@ export default function RightSide() {
   return (
     <div id="rightSide" className="w-3/5 mt-20">
       <Routes>
-        {/* Route ראשי: התפריט */}
+        {/* Route main:menu*/}
         <Route
           index
           element={
@@ -90,7 +89,7 @@ export default function RightSide() {
           }
         />
 
-        {/* לכל כפתור – route משלו */}
+        {/* route for each button*/}
         <Route
           path="call-contacts"
           element={

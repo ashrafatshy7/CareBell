@@ -1,4 +1,3 @@
-// src/components/Header.jsx
 import React, { useEffect, useState } from "react";
 import logo from "../resources/Logo_Gold_Blau_Rubik.png";
 
