@@ -2,12 +2,25 @@ const express = require('express');
 const router = express.Router();
 const User = require('../models/user');
 
-
-router.get('/', async (req, res) =>{
+router.get('/', async (req, res) => {
     const users = await User.find();
     res.json(users);
 });
 
+router.get('/others', async (req, res) => {
+    const excludeId = req.query.excludeId;
+
+    if (!excludeId) {
+        return res.status(400).json({ message: 'Missing excludeId query parameter' });
+    }
+
+    try {
+        const users = await User.find({ id: { $ne: excludeId } });
+        res.json(users);
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+});
 
 router.get('/:id', async (req, res) => {
     try {
@@ -23,24 +36,21 @@ router.get('/:id', async (req, res) => {
     }
 });
 
-
-
-router.post('/addUser', async (req, res)=>{
+router.post('/addUser', async (req, res) => {
     const { id, fullName, phoneNumber, address, dateOfBirth, gender, allergies } = req.body;
 
-        const newUser = new User({
-            id,
-            fullName,
-            phoneNumber,
-            address,
-            dateOfBirth,
-            gender,
-            allergies
-        });
+    const newUser = new User({
+        id,
+        fullName,
+        phoneNumber,
+        address,
+        dateOfBirth,
+        gender,
+        allergies
+    });
 
-        const savedUser = await newUser.save();
-        res.status(201).json(savedUser);
-})
-
+    const savedUser = await newUser.save();
+    res.status(201).json(savedUser);
+});
 
 module.exports = router;

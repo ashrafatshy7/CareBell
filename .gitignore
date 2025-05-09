@@ -35,3 +35,8 @@ yarn-error.log*
 
 # Express server
 /server/logs
+
+
+
+package-lock.json
+/backend/package-lock.json
