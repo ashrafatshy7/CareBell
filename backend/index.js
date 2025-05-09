@@ -13,7 +13,6 @@ const foodRoute = require('./routes/foods');
 const medicationRoute = require('./routes/medications');
 const bellaReminderRoute = require('./routes/bellaReminders');
 const newsRoute = require('./routes/news');
-const meetWithFriendsRoute = require('./routes/meetWithFriends');
 
 
 const options = {
@@ -47,7 +46,6 @@ app.use('/foods', foodRoute);
 app.use('/medications', medicationRoute);
 app.use('/bellaReminders', bellaReminderRoute);
 app.use('/news', newsRoute);
-app.use('/meetWithFriends', meetWithFriendsRoute);
 
 
 
