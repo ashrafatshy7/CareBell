@@ -3,7 +3,7 @@ import io from "socket.io-client";
 import SimplePeer from "simple-peer";
 import axios from "axios";
 
-const SIGNALING_SERVER_URL = "http://51.20.94.199:4000";
+const SIGNALING_SERVER_URL = "https://13.48.13.172:4000";
 const ICE_SERVERS = [{ urls: "stun:stun.l.google.com:19302" }];
 
 function MeetWithFriends() {
@@ -14,6 +14,8 @@ function MeetWithFriends() {
   const [incomingCall, setIncomingCall] = useState(null);
   const [currentUserId, setCurrentUserId] = useState(null);
   const [userSelected, setUserSelected] = useState(false);
+  const [receivedSignal, setReceivedSignal] = useState(null);
+  
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
   const socketRef = useRef();
@@ -21,72 +23,48 @@ function MeetWithFriends() {
   const localStreamRef = useRef();
 
   useEffect(() => {
-    // Fetch all available users when component mounts
     fetchAllUsers();
   }, []);
 
-  // Connect to socket and set up listeners only after a user is selected
   useEffect(() => {
     if (!currentUserId) return;
 
-    socketRef.current = io(SIGNALING_SERVER_URL, {
-      transports: ["websocket"],
-      secure: true,
-    });
+   socketRef.current = io(SIGNALING_SERVER_URL, {
+    transports: ["websocket"],
+    secure: true, // Required for HTTPS
+    reconnection: true,
+    rejectUnauthorized: false // Temporarily for self-signed certs
+  });
 
-    // Register the user before any calls happen
     socketRef.current.emit("register", currentUserId);
 
-    socketRef.current.on("incoming-call", ({ callerId }) => {
+    socketRef.current.on("incoming-call", (callerId) => {
       setIncomingCall(callerId);
     });
 
-    socketRef.current.on("call-accepted", ({ roomId }) => {
-      console.log("Call accepted, room:", roomId);
-      startCall();
-    });
-
-    socketRef.current.on("call-connected", ({ roomId }) => {
-      console.log("Call connected, room:", roomId);
-      startCall();
+    socketRef.current.on("signal", (data) => {
+      if (incomingCall) {
+        setReceivedSignal(data.signal);
+      } else if (peerRef.current) {
+        peerRef.current.signal(data.signal);
+      }
     });
 
     socketRef.current.on("call-rejected", () => {
       alert("Call was rejected");
+      cleanupCall();
     });
-
-    socketRef.current.on("call-failed", ({ reason }) => {
-      alert(`Call failed: ${reason}`);
-    });
-
-    socketRef.current.on("initiate-peer", () => {
-      peerRef.current = createPeer(true);
-    });
-
-    socketRef.current.on("signal", (data) => {
-      if (!peerRef.current) {
-        peerRef.current = createPeer(false);
-      }
-      peerRef.current.signal(data);
-    });
-
-    // Fetch contacts after user selection
-    fetchContacts();
 
     return () => {
-      if (socketRef.current) {
-        socketRef.current.disconnect();
-      }
-      if (localStreamRef.current) {
-        localStreamRef.current.getTracks().forEach(track => track.stop());
-      }
+      socketRef.current?.disconnect();
+      cleanupCall();
     };
   }, [currentUserId]);
 
   const fetchAllUsers = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://51.20.94.199:4000/users`);
+      const response = await axios.get(`${SIGNALING_SERVER_URL}/users`);
       setAllUsers(response.data);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -97,11 +75,13 @@ function MeetWithFriends() {
 
   const fetchContacts = async () => {
     if (!currentUserId) return;
-    
     setLoading(true);
     try {
-      const response = await axios.get(`http://51.20.94.199:4000/users/others?excludeId=${currentUserId}`);
+      const response = await axios.get(
+        `${SIGNALING_SERVER_URL}/users/others?excludeId=${currentUserId}`
+      );
       setContacts(response.data);
+      console.log("Contacts:", response.data);
     } catch (error) {
       console.error("Error fetching contacts:", error);
     } finally {
@@ -112,66 +92,117 @@ function MeetWithFriends() {
   const selectUser = (userId) => {
     setCurrentUserId(userId);
     setUserSelected(true);
+    console.log("Selected user:", userId);
+    fetchContacts();
+    console.log("Contacts fetched:", contacts);
   };
 
-  const startCall = async () => {
+  const initiateCall = async (targetUserId) => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: true,
         audio: true,
       });
       localStreamRef.current = stream;
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream;
-      }
+      localVideoRef.current.srcObject = stream;
       setInCall(true);
+
+      const peer = new SimplePeer({
+        initiator: true,
+        trickle: false,
+        stream: stream,
+        config: { iceServers: ICE_SERVERS },
+      });
+
+      peer.on("signal", (data) => {
+        socketRef.current.emit("signal", { targetUserId, signal: data });
+      });
+
+      peer.on("stream", (remoteStream) => {
+        remoteVideoRef.current.srcObject = remoteStream;
+      });
+
+      peer.on("error", (err) => {
+        console.error("Peer error:", err);
+        cleanupCall();
+      });
+
+      peerRef.current = peer;
+      socketRef.current.emit("call-user", targetUserId);
     } catch (err) {
-      console.error("getUserMedia error:", err);
-      alert("Error accessing camera/mic: " + err.message);
+      console.error("Error initiating call:", err);
+      alert("Error starting call: " + err.message);
+      cleanupCall();
     }
   };
 
-  const initiateCall = (targetUserId) => {
-    socketRef.current.emit("call-user", targetUserId);
-    alert(`Calling user ${targetUserId}...`);
-  };
+  const acceptCall = async () => {
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: true,
+        audio: true,
+      });
+      localStreamRef.current = stream;
+      localVideoRef.current.srcObject = stream;
+      setInCall(true);
 
-  const acceptCall = () => {
-    socketRef.current.emit("accept-call");
-    setIncomingCall(null);
+      const peer = new SimplePeer({
+        initiator: false,
+        trickle: false,
+        stream: stream,
+        config: { iceServers: ICE_SERVERS },
+      });
+
+      peer.on("signal", (data) => {
+        socketRef.current.emit("signal", {
+          targetUserId: incomingCall,
+          signal: data,
+        });
+      });
+
+      peer.on("stream", (remoteStream) => {
+        remoteVideoRef.current.srcObject = remoteStream;
+      });
+
+      peer.on("error", (err) => {
+        console.error("Peer error:", err);
+        cleanupCall();
+      });
+
+      peerRef.current = peer;
+      
+      if (receivedSignal) {
+        peer.signal(receivedSignal);
+        setReceivedSignal(null);
+      }
+
+      socketRef.current.emit("accept-call", incomingCall);
+      setIncomingCall(null);
+    } catch (err) {
+      console.error("Error accepting call:", err);
+      alert("Failed to accept call: " + err.message);
+      cleanupCall();
+    }
   };
 
   const rejectCall = () => {
-    socketRef.current.emit("reject-call");
+    socketRef.current.emit("reject-call", incomingCall);
+    cleanupCall();
     setIncomingCall(null);
   };
 
-  const createPeer = (initiator) => {
-    const peer = new SimplePeer({
-      initiator,
-      trickle: false,
-      stream: localStreamRef.current,
-      config: { iceServers: ICE_SERVERS },
-    });
-
-    peer.on("signal", (data) => {
-      socketRef.current.emit("signal", data);
-    });
-
-    peer.on("stream", (stream) => {
-      if (remoteVideoRef.current) {
-        remoteVideoRef.current.srcObject = stream;
-      }
-    });
-
-    peer.on("error", (err) => {
-      console.error("Peer error:", err);
-    });
-
-    return peer;
+  const cleanupCall = () => {
+    if (peerRef.current) {
+      peerRef.current.destroy();
+      peerRef.current = null;
+    }
+    if (localStreamRef.current) {
+      localStreamRef.current.getTracks().forEach(track => track.stop());
+      localStreamRef.current = null;
+    }
+    setInCall(false);
   };
 
-  // User selection screen
   if (!userSelected) {
     return (
       <div className="w-[800px] h-[900px] bg-black relative">
@@ -223,7 +254,10 @@ function MeetWithFriends() {
             </ul>
           )}
           <button 
-            onClick={() => setUserSelected(false)}
+            onClick={() => {
+              setUserSelected(false);
+              cleanupCall();
+            }}
             className="mt-4 px-4 py-2 bg-gray-500 text-white rounded"
           >
             Change User
@@ -268,6 +302,12 @@ function MeetWithFriends() {
             muted
             className="w-[150px] object-cover border-4 border-white rounded-lg absolute bottom-5 right-5 z-10"
           />
+          <button
+            onClick={cleanupCall}
+            className="absolute bottom-5 left-5 px-4 py-2 bg-red-500 text-white rounded"
+          >
+            End Call
+          </button>
         </div>
       )}
     </div>
