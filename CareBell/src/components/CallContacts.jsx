@@ -4,7 +4,7 @@ import axios from "axios";
 export default function CallContacts() {
   /* ====== CONFIG ====== */
   const userId = "U12345";                 
-  const API    = "https://localhost:4000";  
+  const API    = "http://51.20.94.199:4000";  
 
   /* ====== STATE ====== */
   const [contacts,  setContacts]  = useState([]);
