@@ -16,8 +16,8 @@ const newsRoute = require('./routes/news');
 
 
 const options = {
-  key: fs.readFileSync('localhost+2-key.pem'),
-  cert: fs.readFileSync('localhost+2.pem')
+  key: fs.readFileSync('localhost+3-key.pem'),
+  cert: fs.readFileSync('localhost+3.pem')
 };
 
 const app = express();
