@@ -1,5 +1,5 @@
-// src/RightSide.jsx
-import React from "react";
+// src/components/RightSide.jsx
+import React, { useContext } from "react";
 import {
   FaPhone,
   FaUsers,
@@ -10,6 +10,7 @@ import {
 } from "react-icons/fa";
 import { Routes, Route, Link } from "react-router-dom";
 
+import { AppContext } from "../AppContext";
 import CallContacts      from "./CallContacts";
 import MeetWithFriends   from "./MeetWithFriends";
 import Medication        from "./Medication";
@@ -18,21 +19,29 @@ import News              from "./News";
 import Exercise          from "./Exercise";
 
 const MENU_BUTTONS = [
-  { label: "Call Contacts",     icon: FaPhone,     to: "call-contacts"       },
-  { label: "Meet With Friends", icon: FaUsers,     to: "meet-with-friends"   },
-  { label: "Medicine",          icon: FaPills,     to: "medicine"            },
-  { label: "Meals",             icon: FaUtensils,  to: "meals"               },
-  { label: "News",              icon: FaNewspaper, to: "news"                },
-  { label: "Exercise",          icon: FaDumbbell,  to: "exercise"            },
+  { label: "Call Contacts",     icon: FaPhone,     to: "call-contacts"     },
+  { label: "Meet With Friends", icon: FaUsers,     to: "meet-with-friends" },
+  { label: "Medicine",          icon: FaPills,     to: "medicine"          },
+  { label: "Meals",             icon: FaUtensils,  to: "meals"             },
+  { label: "News",              icon: FaNewspaper, to: "news"              },
+  { label: "Exercise",          icon: FaDumbbell,  to: "exercise"          },
 ];
 
 export default function RightSide() {
+  // Pull `user` from context and guard until it’s ready
+  const { user } = useContext(AppContext);
+  if (!user) {
+    return (
+      <div className="w-3/5 h-screen flex items-center justify-center">
+        <p className="text-xl">Loading user…</p>
+      </div>
+    );
+  }
+
   return (
-    <div
-      id="rightSide"
-      className="w-3/5 h-screen overflow-hidden"
-    >
+    <div id="rightSide" className="w-3/5 h-screen overflow-hidden">
       <Routes>
+        {/* Index: show menu grid */}
         <Route
           index
           element={
@@ -43,16 +52,12 @@ export default function RightSide() {
                   to={to}
                   className="
                     flex flex-col items-center justify-center
-                    border-2 border-blue-900
-                    rounded-xl
-                    py-6 px-4
-                    hover:bg-blue-50
-                    transition
-                    focus:outline-none focus:ring-2 focus:ring-blue-400
+                    border-2 border-blue-900 rounded-xl p-6
+                    hover:bg-blue-100 transition
                   "
                 >
-                  <Icon className="text-blue-900 text-3xl mb-2" />
-                  <span className="text-blue-900 font-semibold text-lg">
+                  <Icon className="text-4xl mb-2 text-blue-900" />
+                  <span className="text-lg font-semibold text-blue-900">
                     {label}
                   </span>
                 </Link>
@@ -61,7 +66,7 @@ export default function RightSide() {
           }
         />
 
-        {/* Each routed component will fill this h-screen parent */}
+        {/* Protected sub-routes now safe to render */}
         <Route path="call-contacts"     element={<CallContacts />} />
         <Route path="meet-with-friends" element={<MeetWithFriends />} />
         <Route path="medicine"          element={<Medication />} />

@@ -1,8 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
+import { API } from "../App";
+import { AppContext } from "../AppContext";
 export default function Medication() {
   /* ===== CONFIG ===== */
-  const userId = user.id;               
+  const { user } = useContext(AppContext);
+  const userId = user?.id;
   /* ===== STATE ===== */
   const [meds, setMeds]     = useState([]);
   const [loading, setLoading] = useState(true);
