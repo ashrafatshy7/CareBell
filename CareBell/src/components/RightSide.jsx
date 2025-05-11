@@ -1,4 +1,3 @@
-// src/components/RightSide.jsx
 import React, { useContext } from "react";
 import {
   FaPhone,
@@ -7,7 +6,7 @@ import {
   FaUtensils,
   FaNewspaper,
   FaDumbbell,
-  FaArrowLeft,
+  FaArrowLeft
 } from "react-icons/fa";
 import {
   Routes,
@@ -15,9 +14,8 @@ import {
   Link,
   useNavigate,
   useLocation,
-  Outlet,
+  Outlet
 } from "react-router-dom";
-
 import { AppContext } from "../AppContext";
 import CallContacts      from "./CallContacts";
 import MeetWithFriends   from "./MeetWithFriends";
@@ -35,7 +33,6 @@ const MENU_BUTTONS = [
   { label: "Exercise",          icon: FaDumbbell,  to: "exercise"          },
 ];
 
-// Map path segments to titles
 const TITLES = {
   "call-contacts":     "Call Contacts",
   "meet-with-friends": "Meet With Friends",
@@ -52,47 +49,50 @@ function PanelLayout() {
   const title = TITLES[segment] || "";
 
   return (
-    <div className="h-full flex flex-col bg-slate-400 p-2 overflow-y-auto">
-      <div className="relative flex items-center mb-4">
-        {/* Back button */}
+    <div className="flex flex-col h-full min-h-0 bg-slate-400 p-4">
+      {/* Toolbar */}
+      <div className="flex items-center mb-4">
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center border-2 border-blue-900 rounded-lg px-3 py-2 bg-white text-blue-900 font-semibold text-sm hover:bg-blue-50 focus:ring-2 focus:ring-blue-400 transition"
+          className="flex items-center gap-2 px-3 py-2 bg-white border-2 border-blue-900 rounded-lg text-blue-900 font-semibold hover:bg-blue-50 transition"
         >
-          <FaArrowLeft className="mr-1 text-lg" /> Back
+          <FaArrowLeft /> Back
         </button>
-
-        {/* Centered title */}
-        <h2 className="absolute left-1/2 top-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-gray-800">
+        <h2 className="ml-4 text-2xl font-bold text-gray-800 whitespace-nowrap">
           {title}
         </h2>
-
-        {/* Placeholder for right slot */}
-        <div className="absolute right-0 px-3 py-2">
-          <div className="invisible">spacer</div>
-        </div>
       </div>
 
-      {/* Render the matched panel */}
-      <Outlet />
+      {/* Scrollable content that fills full width */}
+      <div className="flex-1 overflow-y-auto min-w-0">
+        <div className="w-full p-2">
+          <Outlet />
+        </div>
+      </div>
     </div>
   );
 }
 
 export default function RightSide() {
   const { user } = useContext(AppContext);
+  const heightClass = "h-[75vh]";   // Height of panel
+  const widthClass  = "w-[48vw]";   // Width of panel, adjust as needed
+
   if (!user) {
     return (
-      <div className="w-3/5 h-screen flex items-center justify-center">
+      <div className={`${widthClass} ${heightClass} px-4 flex items-center justify-center`}>
         <p className="text-xl">Loading user…</p>
       </div>
     );
   }
 
   return (
-    <div id="rightSide" className="w-3/5 h-screen overflow-hidden">
+    <div
+      id="rightSide"
+      className={`${widthClass} ${heightClass} px-4 overflow-hidden`}
+    >
       <Routes>
-        {/* Index: show menu grid */}
+        {/* Main menu */}
         <Route
           index
           element={
@@ -101,7 +101,7 @@ export default function RightSide() {
                 <Link
                   key={to}
                   to={to}
-                  className="flex flex-col items-center justify-center border-2 border-blue-900 rounded-xl p-6 hover:bg-blue-100 transition"
+                  className="flex flex-col items-center justify-center border-2 border-blue-900 rounded-xl p-6 hover:bg-blue-100 transition whitespace-nowrap"
                 >
                   <Icon className="text-4xl mb-2 text-blue-900" />
                   <span className="text-lg font-semibold text-blue-900">
@@ -113,8 +113,8 @@ export default function RightSide() {
           }
         />
 
-        {/* Nested routes under the shared PanelLayout */}
-        <Route element={<PanelLayout />}>  
+        {/* Sub-pages */}
+        <Route element={<PanelLayout />}>
           <Route path="call-contacts"     element={<CallContacts />} />
           <Route path="meet-with-friends" element={<MeetWithFriends />} />
           <Route path="medicine"          element={<Medication />} />

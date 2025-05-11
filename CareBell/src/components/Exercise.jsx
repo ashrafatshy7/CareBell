@@ -380,7 +380,7 @@ function Exercise() {
                   <div className="flex flex-col sm:flex-row gap-3">
                     <button
                       onClick={() => setSelectedExercise(exercise)}
-                      className="flex-1 px-4 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                      className="flex-1 px-2 py-0.5 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition-colors"
                     >
                       View Details
                     </button>
@@ -395,7 +395,7 @@ function Exercise() {
                     ) : (
                       <button
                         onClick={() => speakText(createExerciseDescription(exercise), exercise._id)}
-                        className="flex-1 sm:flex-none sm:w-auto px-4 py-3 bg-green-600 text-white text-lg font-semibold rounded-lg"
+                        className="flex-1 sm:flex-1 sm:w-15 px-3 py-0.5 bg-green-600 text-white text-lg font-semibold rounded-lg"
                       >
                         <span className="mr-2">🔊</span>Read
                       </button>

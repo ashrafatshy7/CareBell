@@ -1,25 +1,21 @@
-// src/components/CallContacts.jsx
 import React, { useEffect, useState, useMemo, useContext } from "react";
 import axios from "axios";
 import { AppContext } from "../AppContext";
 import { API } from "../config";
 
 export default function CallContacts() {
-  /* ====== CONFIG ====== */
   const { user } = useContext(AppContext);
   const userId = user?.id;
 
-  /* ====== STATE ====== */
-  const [contacts,  setContacts]  = useState([]);
-  const [loading,   setLoading ]  = useState(true);
-  const [error,     setError   ]  = useState(null);
-  const [isAdding,  setIsAdding]  = useState(false);
-  const [saving,    setSaving ]   = useState(false);
-  const [form,      setForm   ]   = useState({ fullName: "", phoneNumber: "", relationship: "" });
+  const [contacts, setContacts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isAdding, setIsAdding] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [form, setForm] = useState({ fullName: "", phoneNumber: "", relationship: "" });
   const [confirmId, setConfirmId] = useState(null);
-  const [query,     setQuery    ] = useState("");
+  const [query, setQuery] = useState("");
 
-  /* ====== FETCH ====== */
   useEffect(() => {
     setLoading(true);
     axios
@@ -29,7 +25,6 @@ export default function CallContacts() {
       .finally(() => setLoading(false));
   }, [userId]);
 
-  /* ====== FILTER + SORT ====== */
   const visibleContacts = useMemo(() => {
     const q = query.trim().toLowerCase();
     return contacts
@@ -43,7 +38,6 @@ export default function CallContacts() {
       );
   }, [contacts, query]);
 
-  /* ====== HANDLERS ====== */
   const handleChange = (e) => setForm({ ...form, [e.target.name]: e.target.value });
 
   const handleSave = () => {
@@ -70,7 +64,6 @@ export default function CallContacts() {
 
   const askDelete    = (id) => setConfirmId(id);
   const cancelDelete = ()   => setConfirmId(null);
-
   const confirmDelete = (id) => {
     axios
       .delete(`${API}/contacts/deleteContact/${id}`)
@@ -79,54 +72,41 @@ export default function CallContacts() {
       .finally(() => setConfirmId(null));
   };
 
-  /* ====== RENDER ====== */
-  if (loading) return <p className="text-center">Loading…</p>;
-  if (error)   return <p className="text-center text-red-600">{error}</p>;
+  if (loading) return <p className="text-center py-8">Loading…</p>;
+  if (error)   return <p className="text-center text-red-600 py-8">{error}</p>;
 
   return (
-    <div className="h-full flex flex-col bg-slate-400 p-2 overflow-y-auto">
-      {/* ADD BUTTON HEADER PLACEHOLDER */}
-      <div className="relative flex items-center mb-4">
-        {/* left placeholder for back */}
-        <div className="w-10" />
-        {/* center placeholder for title */}
-        <div className="absolute left-1/2 transform -translate-x-1/2" />
-        {/* Add Contact button on the right */}
-        {!isAdding ? (
-          <button
-            onClick={() => setIsAdding(true)}
-            className="absolute top-1 right-0 bg-blue-900 hover:bg-blue-700 text-white font-semibold text-sm rounded-lg px-3 py-2 transition"
-          >
-            Add Contact
-          </button>
-        ) : (
-          <div className="absolute right-0 w-10" />
-        )}
-      </div>
+    <div className="h-full flex flex-col bg-slate-400 p-4 overflow-y-auto">
 
-      {/* SEARCH BAR */}
-      <div className="mb-4 max-w-md mx-auto">
+      {/* Search + Add */}
+      <div className="flex items-center gap-2 mb-6 max-w-md mx-auto">
         <input
           type="text"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search contacts…"
-          className="w-full rounded-md border-2 border-blue-900 focus:border-blue-700 focus:ring-blue-700 text-base px-4 py-2"
+          className="flex-1 rounded-md border-2 border-blue-900 focus:border-blue-700 focus:ring-blue-700 text-base px-4 py-2"
         />
+        {!isAdding && (
+          <button
+            onClick={() => setIsAdding(true)}
+            className="bg-blue-900 hover:bg-blue-700 text-white font-semibold text-sm rounded-lg px-4 py-2 transition"
+          >
+            Add Contact
+          </button>
+        )}
       </div>
 
-      {/* ADD FORM */}
+      {/* Add form */}
       {isAdding && (
-        <div className="mb-6 max-w-md mx-auto bg-white rounded-2xl shadow-md p-6 space-y-4">
+        <div className="mb-6 max-w-md mx-auto bg-white rounded-2xl shadow-md p-3 space-y-1">
           {[
             { lbl: "Full Name",    name: "fullName",    placeholder: "Michael Cohen" },
             { lbl: "Phone Number", name: "phoneNumber", placeholder: "050-1234567" },
             { lbl: "Relationship", name: "relationship", placeholder: "Son / Friend…" },
           ].map((f) => (
             <div key={f.name}>
-              <label className="block text-base font-semibold text-gray-700">
-                {f.lbl}
-              </label>
+              <label className="block text-base font-semibold text-gray-700">{f.lbl}</label>
               <input
                 name={f.name}
                 value={form[f.name]}
@@ -136,7 +116,6 @@ export default function CallContacts() {
               />
             </div>
           ))}
-
           <div className="flex justify-end gap-3">
             <button
               onClick={cancelAdd}
@@ -155,22 +134,17 @@ export default function CallContacts() {
         </div>
       )}
 
-      {/* CONTACTS LIST */}
-      <div className="grid gap-4 max-w-md mx-auto">
+      {/* Contacts list */}
+      <div className="grid gap-6 max-w-md mx-auto">
         {visibleContacts.map((c) => (
-          <div
-            key={c._id}
-            className="bg-white rounded-2xl shadow-md p-4 flex flex-col gap-3"
-          >
+          <div key={c._id} className="bg-white rounded-3xl shadow-md p-6 flex flex-col gap-3">
             <div className="text-lg font-medium text-gray-900">
-              {c.fullName} ({c.relationship})
+              {c.fullName} {c.relationship && `(${c.relationship})`}
             </div>
 
             {confirmId === c._id ? (
               <div className="flex flex-col gap-2">
-                <span className="text-gray-800">
-                  Delete <b>{c.fullName}</b>?
-                </span>
+                <span className="text-gray-800">Delete <b>{c.fullName}</b>?</span>
                 <div className="flex gap-2">
                   <button
                     onClick={() => confirmDelete(c._id)}
@@ -206,9 +180,7 @@ export default function CallContacts() {
         ))}
 
         {visibleContacts.length === 0 && (
-          <p className="text-center text-gray-700">
-            No contacts match your search.
-          </p>
+          <p className="text-center text-gray-700">No contacts match your search.</p>
         )}
       </div>
     </div>

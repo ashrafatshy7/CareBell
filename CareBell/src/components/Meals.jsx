@@ -434,7 +434,7 @@ function Meals() {
                         <div className="flex flex-col sm:flex-row gap-3 justify-between items-center">
                           <button
                             onClick={() => selectMeal(food)}
-                            className="w-full sm:w-auto px-5 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                            className="w-full sm:w-15 px-3 py-1 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition-colors"
                           >
                             View Details
                           </button>
@@ -451,7 +451,7 @@ function Meals() {
                           ) : (
                             <button
                               onClick={() => speakText(createFoodDescription(food))}
-                              className="w-full sm:w-auto flex items-center justify-center px-5 py-3 rounded-lg text-lg font-semibold bg-green-600 text-white"
+                              className="w-full sm:w-15 flex items-center justify-center px-3 py-1 rounded-lg text-lg font-semibold bg-green-600 text-white"
                             >
                               <span className="mr-2 text-xl">🔊</span>
                               Read Aloud

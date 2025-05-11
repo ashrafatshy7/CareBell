@@ -103,11 +103,11 @@ export default function Medication() {
     <div className="min-h-screen bg-slate-400 p-6">
       {/* HEADER */}
       <div className="flex items-center justify-between mb-8">
-        <h2 className="text-3xl font-bold text-gray-800">Medication</h2>
+        
         {!isAdding && (
           <button
             onClick={() => setIsAdding(true)}
-            className="bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-xl transition"
+            className=" bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-xl transition"
           >
             Add Medication
           </button>
