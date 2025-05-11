@@ -3,6 +3,9 @@ import io from "socket.io-client";
 import SimplePeer from "simple-peer";
 import axios from "axios";
 import { API } from "../config";
+import { FaArrowLeft }     from "react-icons/fa";
+import { useNavigate }     from "react-router-dom";
+
 
 const SIGNALING_SERVER_URL = `${API}`;
 const ICE_SERVERS = [{ urls: "stun:stun.l.google.com:19302" }];
