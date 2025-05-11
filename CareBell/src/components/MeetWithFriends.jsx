@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import io from "socket.io-client";
 import SimplePeer from "simple-peer";
 import axios from "axios";
-
 const SIGNALING_SERVER_URL = "http://51.20.94.199:4000";
 const ICE_SERVERS = [{ urls: "stun:stun.l.google.com:19302" }];
 
@@ -86,7 +85,7 @@ function MeetWithFriends() {
   const fetchAllUsers = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`http://51.20.94.199:4000/users`);
+      const response = await axios.get(`${API}/users`);
       setAllUsers(response.data);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -100,7 +99,7 @@ function MeetWithFriends() {
     
     setLoading(true);
     try {
-      const response = await axios.get(`http://51.20.94.199:4000/users/others?excludeId=${currentUserId}`);
+      const response = await axios.get(`${API}/users/others?excludeId=${currentUserId}`);
       setContacts(response.data);
     } catch (error) {
       console.error("Error fetching contacts:", error);

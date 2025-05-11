@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-
 export default function Medication() {
   /* ===== CONFIG ===== */
-  const userId = "U12345";               
-  const API    = "http://51.20.94.199:4000";  
+  const userId = user.id;               
   /* ===== STATE ===== */
   const [meds, setMeds]     = useState([]);
   const [loading, setLoading] = useState(true);

@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, useContext } from "react";
 import axios from "axios";
-
+import { AppContext } from "../AppContext";
+import { API } from "../App";
 export default function CallContacts() {
   /* ====== CONFIG ====== */
-  const userId = "U12345";                 
-  const API    = "http://51.20.94.199:4000";  
+  const { userId } = useContext(AppContext);
 
   /* ====== STATE ====== */
   const [contacts,  setContacts]  = useState([]);
