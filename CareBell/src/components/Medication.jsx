@@ -4,7 +4,7 @@ import axios from "axios";
 export default function Medication() {
   /* ===== CONFIG ===== */
   const userId = "U12345";               
-  const API    = "http://13.48.13.172:4000";  
+  const API    = "https://carebell.online";  
   /* ===== STATE ===== */
   const [meds, setMeds]     = useState([]);
   const [loading, setLoading] = useState(true);
