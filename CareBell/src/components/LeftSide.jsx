@@ -5,7 +5,7 @@ export default function LeftSide() {
   return (
     <div
       id="leftSide"
-      className="w-full md:w-2/5 flex flex-col items-center mt-20"
+      className="h-fit w-full md:w-2/5 flex flex-col items-center"
     >
       <Bella/>
     </div>

@@ -4,7 +4,12 @@ import { AppContext } from "../AppContext";
 import { API } from "../App";
 export default function CallContacts() {
   /* ====== CONFIG ====== */
+<<<<<<< HEAD
   const { userId } = useContext(AppContext);
+=======
+  const userId = "U12345";                 
+  const API    = "http://13.48.13.172:4000";  
+>>>>>>> 5abb90ae34f5c6d383689554bb05be1d0af30962
 
   /* ====== STATE ====== */
   const [contacts,  setContacts]  = useState([]);

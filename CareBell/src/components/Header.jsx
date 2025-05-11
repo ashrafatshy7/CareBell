@@ -69,7 +69,7 @@ export default function Header() {
 
   return (
     <>
-      <header className="flex justify-between items-center py-4 px-2 border-b border-blue-800">
+      <header className="flex justify-between items-center py-4 px-2 border-b border-blue-800 mb-4">
         {/* date / time / weather */}
         <div className="flex items-center space-x-6">
           <div className="flex flex-col leading-none">

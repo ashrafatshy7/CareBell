@@ -23,8 +23,18 @@ const options = {
 const app = express();
 const server = https.createServer(options, app);
 const io = new Server(server, {
-  cors: { origin: '*' }
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"],
+    credentials: true
+  },
+  transports: ['websocket', 'polling']
 });
+
+io.on("connection_error", (err) => {
+  console.log(`Connection error: ${err.message}`);
+});
+
 const PORT = 4000;
 
 
