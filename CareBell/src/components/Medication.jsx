@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
-import { API } from "../App";
+import { API } from "../config";
 import { AppContext } from "../AppContext";
 export default function Medication() {
   /* ===== CONFIG ===== */

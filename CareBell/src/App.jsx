@@ -6,8 +6,7 @@ import Header        from "./components/Header";
 import LeftSide      from "./components/LeftSide";
 import RightSide     from "./components/RightSide";
 import { AppContext } from "./AppContext";
-
-export const API = "https://carebell.online";
+import { API } from "./config"
 
 /**
  * Fetches JSON from the given URL and throws on HTTP errors.

@@ -2,7 +2,9 @@ import React, { useState, useRef, useEffect } from "react";
 import io from "socket.io-client";
 import SimplePeer from "simple-peer";
 import axios from "axios";
-const SIGNALING_SERVER_URL = "http://51.20.94.199:4000";
+import { API } from "../config";
+
+const SIGNALING_SERVER_URL = `${API}`;
 const ICE_SERVERS = [{ urls: "stun:stun.l.google.com:19302" }];
 
 function MeetWithFriends() {

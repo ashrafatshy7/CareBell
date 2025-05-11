@@ -4,7 +4,7 @@ import axios from "axios";
 import { FaArrowLeft } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { AppContext } from "../AppContext";
-import { API } from "../App";
+import { API } from "../config";
 export default function CallContacts() {
   /* ====== CONFIG ====== */
   const { user } = useContext(AppContext);
