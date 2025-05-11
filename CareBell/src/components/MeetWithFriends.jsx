@@ -2,12 +2,7 @@ import React, { useState, useRef, useEffect } from "react";
 import io from "socket.io-client";
 import SimplePeer from "simple-peer";
 import axios from "axios";
-<<<<<<< HEAD
 const SIGNALING_SERVER_URL = "http://51.20.94.199:4000";
-=======
-
-const SIGNALING_SERVER_URL = "https://13.48.13.172:4000";
->>>>>>> 5abb90ae34f5c6d383689554bb05be1d0af30962
 const ICE_SERVERS = [{ urls: "stun:stun.l.google.com:19302" }];
 
 function MeetWithFriends() {
@@ -68,11 +63,7 @@ function MeetWithFriends() {
   const fetchAllUsers = async () => {
     setLoading(true);
     try {
-<<<<<<< HEAD
       const response = await axios.get(`${API}/users`);
-=======
-      const response = await axios.get(`${SIGNALING_SERVER_URL}/users`);
->>>>>>> 5abb90ae34f5c6d383689554bb05be1d0af30962
       setAllUsers(response.data);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -85,13 +76,7 @@ function MeetWithFriends() {
     if (!currentUserId) return;
     setLoading(true);
     try {
-<<<<<<< HEAD
       const response = await axios.get(`${API}/users/others?excludeId=${currentUserId}`);
-=======
-      const response = await axios.get(
-        `${SIGNALING_SERVER_URL}/users/others?excludeId=${currentUserId}`
-      );
->>>>>>> 5abb90ae34f5c6d383689554bb05be1d0af30962
       setContacts(response.data);
       console.log("Contacts:", response.data);
     } catch (error) {
