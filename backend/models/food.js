@@ -3,23 +3,29 @@ const mongoose = require('mongoose');
 const foodSchema = new mongoose.Schema({
     barcode:{
         type: String,
-        require: true,
+        required: true,
     },
     name:{
         type: String,
-        require: true
+        required: true
     },
     description:{
         type: String,
-        require: true
+        required: true
     },
     ingredients:{
         type: [String],
-        require: true
+        required: true
     },
+    imageURL:{
+        type: String,
+        required: false,  // Making it optional since existing foods might not have photos
+        default: null
+    }
+}, {
+    timestamps: true  // Adds createdAt and updatedAt automatically
 });
 
 foodSchema.index({ barcode: 1 });
-
 
 module.exports = mongoose.model('Foods', foodSchema);

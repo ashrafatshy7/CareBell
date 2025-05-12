@@ -11,7 +11,8 @@ router.get('/', async (req, res) =>{
 
 router.get('/:barcode', async (req, res) => {
     try {
-        const food = await Food.findOne({ id: req.params.barcode });
+        const food = await Food.findOne({ barcode: req.params.barcode });
+
 
         if (!food) {
             return res.status(404).json({ message: 'Food not found' });

@@ -3,7 +3,7 @@ const axios = require('axios');
 
 const router = express.Router();
 
-const API_KEY = '01fb15e1884a7312084fe121ec6af5c2';
+const API_KEY = '3961d9e23ad18277e538286ba21780a5';
 
 router.get('/todays-news', async (req, res) => {
     try {
