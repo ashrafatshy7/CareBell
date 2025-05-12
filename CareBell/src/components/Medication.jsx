@@ -1,10 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import axios from "axios";
-
+import { API } from "../config";
+import { AppContext } from "../AppContext";
 export default function Medication() {
   /* ===== CONFIG ===== */
-  const userId = "U12345";               
-  const API    = "https://carebell.online";  
+  const { user } = useContext(AppContext);
+  const userId = user?.id;
   /* ===== STATE ===== */
   const [meds, setMeds]     = useState([]);
   const [loading, setLoading] = useState(true);
@@ -102,11 +103,11 @@ export default function Medication() {
     <div className="min-h-screen bg-slate-400 p-6">
       {/* HEADER */}
       <div className="flex items-center justify-between mb-8">
-        <h2 className="text-3xl font-bold text-gray-800">Medication</h2>
+        
         {!isAdding && (
           <button
             onClick={() => setIsAdding(true)}
-            className="bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-xl transition"
+            className=" bg-blue-900 hover:bg-blue-700 text-white font-semibold py-2 px-6 rounded-xl transition"
           >
             Add Medication
           </button>

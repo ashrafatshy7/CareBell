@@ -1,6 +1,7 @@
 // src/components/Header.jsx
 import React, { useEffect, useState } from "react";
 import logo from "../resources/Logo_Gold_Blau_Rubik.png";
+import { Link } from "react-router-dom";
 import SettingsModal from "./SettingsModal";     
 
 const OPENWEATHER_KEY = "6d3ad80f32ae07a071aeb542a0049d46";
@@ -92,7 +93,13 @@ export default function Header() {
         </div>
 
         {/* logo */}
-        <img src={logo} alt="CareBells Logo" className="h-16" />
+        <Link to="/">
+          <img
+            src={logo}
+            alt="CareBells Logo"
+            className="h-16 cursor-pointer"
+          />
+        </Link>
 
         {/* buttons */}
         <div className="flex items-center space-x-4">
