@@ -1,9 +1,10 @@
 const express = require('express');
 const axios = require('axios');
+require('dotenv').config();
 
 const router = express.Router();
 
-const API_KEY = '01fb15e1884a7312084fe121ec6af5c2';
+const API_KEY = process.env.NEWS_API_KEY;
 
 router.get('/todays-news', async (req, res) => {
     try {
