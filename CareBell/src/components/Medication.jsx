@@ -160,11 +160,11 @@ export default function Medication() {
               <div className="text-xl font-semibold text-gray-900">{m.name}</div>
               <div className="text-gray-700 text-sm">Dosage: {m.dosage}</div>
               {m.frequency && <div className="text-gray-700 text-sm">Frequency: every {m.frequency}h</div>}
-              <div className="text-gray-600 text-sm">
+              <div className="text-gray-900 text-sm font-semibold">
                 Last taken:&nbsp;{m.lastTaken ? new Date(m.lastTaken).toLocaleString() : "Never"}
               </div>
               {m.nextDue && (
-                <div className="text-gray-600 text-sm">
+                <div className="text-gray-900 text-sm font-semibold">
                   Next due:&nbsp;{new Date(m.nextDue).toLocaleString()}
                 </div>
               )}
