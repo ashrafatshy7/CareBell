@@ -1,1 +1,1 @@
-export const API = "https://belladb.leontari.uk";
+export const API = "belladb.leontari.uk";
