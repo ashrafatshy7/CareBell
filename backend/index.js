@@ -39,7 +39,7 @@ const PORT = 4443;
 app.use(cors()); 
 app.use(express.json()); 
 
-mongoose.connect('mongodb+srv://CareBell:vTDHDu9pHns9HNlw@cluster0.bqe7zge.mongodb.net') 
+mongoose.connect('mongodb+srv://CareBell:vTDHDu9pHns9HNlw@cluster0.bqe7zge.mongodb.net2') 
   .then(() => console.log('Connected to MongoDB')) 
   .catch(err => console.error('Could not connect to MongoDB:', err)); 
 
