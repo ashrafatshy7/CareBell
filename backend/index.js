@@ -14,6 +14,7 @@ const medicationRoute = require('./routes/medications');
 const bellaReminderRoute = require('./routes/bellaReminders'); 
 const newsRoute = require('./routes/news'); 
 const exercisesRoute = require('./routes/exercises');
+const reminderRoute = require('./routes/reminders');
 
 const app = express(); 
 const server = https.createServer({ 
@@ -54,6 +55,7 @@ app.use('/medications', medicationRoute);
 app.use('/bellaReminders', bellaReminderRoute); 
 app.use('/news', newsRoute); 
 app.use('/exercises', exercisesRoute);
+app.use('/reminders', reminderRoute);
 
 app.get('/', (req, res) =>{ 
     res.send('asdfsfd'); 
