@@ -104,7 +104,7 @@ export default function CallContacts() {
           onClick={() => setMenuOpen(o => !o)}
           className="ml-auto ml-4  text-blue-900 p-5 font-semibold focus:outline-none"
         >
-          <span className="text-xl">⋮</span>
+          <span className="text-xl">🗑️</span>
         </button>
         {menuOpen && (
           <div className=" absolute mt-20 right-96 transform translate-x-4/5 bg-white border border-gray-200 rounded-md shadow-lg z-10">
