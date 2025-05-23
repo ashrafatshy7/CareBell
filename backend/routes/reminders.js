@@ -14,6 +14,16 @@ router.post('/', async (req, res) => {
     }
 });
 
+// Get all reminders for a specific user
+router.get('/:userId', async (req, res) => {
+    try {
+        const reminders = await Reminder.find({ userId: req.params.userId });
+        res.json(reminders);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
 // Delete a reminder by ID and userID
 router.delete('/:userId/:id', async (req, res) => {
     try {
