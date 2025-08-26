@@ -19,6 +19,9 @@ const PIPER_PATH = (() => {
   } else if (platform === 'linux') {
     // on Linux use the linux binary
     return path.join(BIN_DIR, 'linux', 'piper');
+  } else if (platform === 'darwin') {
+    // on macOS use the darwin binary
+    return path.join(BIN_DIR, 'darwin', 'piper');
   } else {
     // optional: handle other platforms or throw
     throw new Error(`Unsupported platform: ${platform}`);
