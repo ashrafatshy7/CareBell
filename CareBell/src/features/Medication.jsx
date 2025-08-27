@@ -156,12 +156,12 @@ export default function Medication() {
       )}
 
       {/* LIST */}
-      <div className="grid gap-6 max-w-md mx-auto">
+      <div className="grid grid-cols-2 gap-4 max-w-4xl mx-auto">
         {meds.map((m, i) => {
           const canTake = !m.taken && isWithinWindow(m.nextDue);
           return (
-            <div key={m._id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-6 flex flex-col gap-3">
-              <div className="text-xl font-semibold text-gray-900 dark:text-gray-100">{m.name}</div>
+            <div key={m._id} className="bg-white dark:bg-gray-800 rounded-2xl shadow-md p-4 flex flex-col gap-2">
+              <div className="text-lg font-semibold text-gray-900 dark:text-gray-100">{m.name}</div>
               <div className="text-gray-700 dark:text-gray-300 text-sm">{t("Medication.dosage")} {m.dosage}</div>
               {m.frequency && <div className="text-gray-700 dark:text-gray-300 text-sm">{t("Medication.frequency")} {m.frequency} {t("Medication.hours")}</div>}
               <div className="text-gray-900 dark:text-gray-100 text-sm font-semibold">
@@ -176,34 +176,34 @@ export default function Medication() {
               {/* BUTTON BLOCK */}
               {confirmDeleteId === m._id ? (
                 /* delete confirm */
-                <div className="flex flex-col gap-3">
-                  <span className="text-gray-800 dark:text-gray-200">{t("Medication.deleteLabel")} <b>{m.name}</b>?</span>
-                  <div className="flex gap-4">
-                    <button onClick={() => confirmDelete(m._id)} className="flex-1 bg-gray-600 hover:bg-red-500 text-white py-2 rounded-lg text-lg">
+                <div className="flex flex-col gap-2">
+                  <span className="text-gray-800 dark:text-gray-200 text-sm">{t("Medication.deleteLabel")} <b>{m.name}</b>?</span>
+                  <div className="flex gap-2">
+                    <button onClick={() => confirmDelete(m._id)} className="flex-1 bg-gray-600 hover:bg-red-500 text-white py-1.5 rounded-lg text-sm">
                       {t("Medication.yesDelete")}
                     </button>
-                    <button onClick={cancelDelete} className="flex-1 bg-gray-300 hover:bg-gray-400 py-2 rounded-lg text-lg">
+                    <button onClick={cancelDelete} className="flex-1 bg-gray-300 hover:bg-gray-400 py-1.5 rounded-lg text-sm">
                       {t("Medication.noKeep")}
                     </button>
                   </div>
                 </div>
               ) : confirmTakeId === m._id ? (
                 /* take confirm */
-                <div className="flex flex-col gap-3">
-                  <span className="text-gray-800 dark:text-gray-200">{t("Medication.Confirmation")} <b>{m.name}</b>?</span>
-                  <div className="flex gap-4">
+                <div className="flex flex-col gap-2">
+                  <span className="text-gray-800 dark:text-gray-200 text-sm">{t("Medication.Confirmation")} <b>{m.name}</b>?</span>
+                  <div className="flex gap-2">
                     <button
                       onClick={() => {
                         setConfirmTakeId(null);
                         markTakenNow(i, m._id);
                       }}
-                      className="flex-1 bg-blue-900 hover:bg-blue-700 text-white py-2 rounded-lg text-lg"
+                      className="flex-1 bg-blue-900 hover:bg-blue-700 text-white py-1.5 rounded-lg text-sm"
                     >
                       {t("Medication.yesTaken")}
                     </button>
                     <button
                       onClick={() => setConfirmTakeId(null)}
-                      className="flex-1 bg-gray-300 hover:bg-gray-400 py-2 rounded-lg text-lg"
+                      className="flex-1 bg-gray-300 hover:bg-gray-400 py-1.5 rounded-lg text-sm"
                     >
                       {t("Medication.noCancel")}
                     </button>
@@ -211,12 +211,12 @@ export default function Medication() {
                 </div>
               ) : (
                 /* normal buttons */
-                <div className="flex gap-4">
+                <div className="flex gap-2">
                   {/* Mark as Taken – main big button*/}
                   <button
                     onClick={() => setConfirmTakeId(m._id)}
                     disabled={!canTake}
-                    className={`flex-1 text-lg font-semibold text-white rounded-xl py-2 transition ${
+                    className={`flex-1 text-sm font-semibold text-white rounded-lg py-1.5 transition ${
                       canTake
                         ? "bg-blue-900 hover:bg-blue-700 border-2 border-blue-950"
                         : "bg-gray-400 cursor-not-allowed border-2 border-gray-500"
@@ -228,7 +228,7 @@ export default function Medication() {
                   {/* Delete button style*/}
                   <button
                     onClick={() => askDelete(m._id)}
-                    className="bg-gray-300 px-4 py-2 text-sm font-semibold text-gray-900
+                    className="bg-gray-300 px-3 py-1.5 text-xs font-semibold text-gray-900
                                border border-gray-900 rounded-md
                                hover:bg-red-100 transition"
                   >

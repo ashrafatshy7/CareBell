@@ -144,16 +144,16 @@ export default function News() {
   ];
 
   return (
-    <div className="p-4 max-w-4xl mx-auto bg-white dark:bg-gray-800 shadow-lg rounded-lg">
-      <h1 className="text-4xl font-bold mb-4 text-center text-blue-800 dark:text-blue-200">
+    <div className="p-3 max-w-6xl mx-auto bg-white dark:bg-gray-800 shadow-lg rounded-lg">
+      <h1 className="text-2xl font-bold mb-3 text-center text-blue-800 dark:text-blue-200">
         {t("News.latestNews")}
       </h1>
 
       {/* region selector */}
-      <div className="relative mb-4">
+      <div className="relative mb-3">
         <button
           onClick={() => setRegionDropdownOpen((o) => !o)}
-          className="border rounded px-2 py-1 w-full text-left"
+          className="border rounded px-2 py-1 w-full text-left text-sm"
         >
           {t("News.selectRegions")}
         </button>
@@ -183,46 +183,46 @@ export default function News() {
 
       {/* loading / error / list */}
       {loading ? (
-        <div className="flex flex-col items-center justify-center py-12">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-500 mb-4"></div>
-          <p className="text-xl text-gray-600 dark:text-gray-300">
+        <div className="flex flex-col items-center justify-center py-8">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-4 border-blue-500 mb-3"></div>
+          <p className="text-sm text-gray-600 dark:text-gray-300">
             {t("News.loading")}
           </p>
         </div>
       ) : error ? (
-        <div className="bg-red-100 dark:bg-red-900 border-l-8 border-red-600 text-red-700 dark:text-red-200 p-6 rounded-lg mb-6 text-xl">
-          <h3 className="font-bold text-2xl mb-2">{t("News.errorTitle")}</h3>
-          <p className="mb-4">{error}</p>
+        <div className="bg-red-100 dark:bg-red-900 border-l-4 border-red-600 text-red-700 dark:text-red-200 p-4 rounded-lg mb-4 text-sm">
+          <h3 className="font-bold text-lg mb-2">{t("News.errorTitle")}</h3>
+          <p className="mb-3">{error}</p>
           <button
             onClick={retryFetch}
-            className="mt-4 px-5 py-3 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+            className="mt-2 px-3 py-2 bg-blue-600 text-white text-sm font-semibold rounded-lg hover:bg-blue-700 transition-colors"
           >
             {t("News.retry")}
           </button>
         </div>
       ) : (
         <div>
-          <div className="mb-6 flex justify-between items-center">
-            <p className="text-lg text-gray-600 dark:text-gray-300">
+          <div className="mb-4 flex justify-between items-center">
+            <p className="text-sm text-gray-600 dark:text-gray-300">
               {news.length} {t("News.articlesFound")}
             </p>
             <button
               onClick={stopSpeaking}
-              className={`px-5 py-3 rounded-lg text-lg font-semibold ${
+              className={`px-3 py-2 rounded-lg text-sm font-semibold ${
                 speaking
                   ? "bg-red-500 text-white"
                   : "bg-gray-300 text-gray-500"
               }`}
               disabled={!speaking}
             >
-              <span className="mr-2 text-xl">🔇</span>
+              <span className="mr-1 text-lg">🔇</span>
               {t("News.stopReading")}
             </button>
           </div>
 
-          <ul className="space-y-6">
+          <div className="grid grid-cols-2 gap-4">
             {news.map((article, idx) => (
-              <li
+              <div
                 key={idx}
                 className={`border ${
                   currentArticleIndex === idx
@@ -230,12 +230,12 @@ export default function News() {
                     : "border-gray-200 dark:border-gray-600"
                 } rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow`}
               >
-                <div className="p-5 bg-gray-50 dark:bg-gray-700 flex justify-between items-center">
-                  <div>
-                    <h3 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                <div className="p-3 bg-gray-50 dark:bg-gray-700 flex justify-between items-start">
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-100 line-clamp-2">
                       {article.title}
                     </h3>
-                    <p className="text-gray-500 dark:text-gray-300 mt-1">
+                    <p className="text-xs text-gray-500 dark:text-gray-300 mt-1 truncate">
                       {t("News.source")}: {article.source} |{" "}
                       {formatDate(article.published_at)}
                     </p>
@@ -243,9 +243,9 @@ export default function News() {
                   {currentArticleIndex === idx && speaking ? (
                     <button
                       onClick={stopSpeaking}
-                      className="flex items-center px-4 py-2 rounded-lg text-lg font-semibold bg-yellow-500 text-white"
+                      className="flex items-center px-2 py-1 rounded-lg text-xs font-semibold bg-yellow-500 text-white ml-2 flex-shrink-0"
                     >
-                      <span className="mr-2 text-xl">🔇</span>
+                      <span className="mr-1 text-sm">🔇</span>
                       {t("News.stop")}
                     </button>
                   ) : (
@@ -253,25 +253,25 @@ export default function News() {
                       onClick={() =>
                         speakText(createNewsDescription(article), idx)
                       }
-                      className="flex items-center px-4 py-2 rounded-lg text-lg font-semibold bg-green-600 text-white"
+                      className="flex items-center px-2 py-1 rounded-lg text-xs font-semibold bg-green-600 text-white ml-2 flex-shrink-0"
                     >
-                      <span className="mr-2 text-xl">🔊</span>
+                      <span className="mr-1 text-sm">🔊</span>
                       {t("News.read")}
                     </button>
                   )}
                 </div>
-                <div className="p-5 bg-white dark:bg-gray-800">
+                <div className="p-3 bg-white dark:bg-gray-800">
                   {article.image && (
                     <img
                       src={article.image}
                       alt={article.title}
-                      className="w-full h-auto rounded-lg mb-4"
+                      className="w-full h-32 object-cover rounded-lg mb-2"
                       onError={(e) => {
                         e.target.style.display = "none";
                       }}
                     />
                   )}
-                  <p className="text-lg text-gray-700 dark:text-gray-300 mb-4">
+                  <p className="text-sm text-gray-700 dark:text-gray-300 mb-3 line-clamp-3">
                     {article.description}
                   </p>
                   {article.url && (
@@ -279,15 +279,15 @@ export default function News() {
                       href={article.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="inline-block px-4 py-2 bg-blue-600 text-white text-lg font-semibold rounded-lg hover:bg-blue-700 transition-colors"
+                      className="inline-block px-3 py-1 bg-blue-600 text-white text-xs font-semibold rounded-lg hover:bg-blue-700 transition-colors"
                     >
                       {t("News.readMore")}
                     </a>
                   )}
                 </div>
-              </li>
+              </div>
             ))}
-          </ul>
+          </div>
         </div>
       )}
     </div>

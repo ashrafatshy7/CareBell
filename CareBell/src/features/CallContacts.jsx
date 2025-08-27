@@ -196,11 +196,11 @@ export default function CallContacts() {
       )}
 
       {/* Contacts list with selection */}
-      <div className="grid gap-6 max-w-md mx-auto">
+      <div className="grid grid-cols-2 gap-4 max-w-4xl mx-auto">
         {visibleContacts.map(c => (
           <label
             key={c._id}
-            className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-md p-6 flex items-center gap-3"
+            className="relative bg-white dark:bg-gray-800 rounded-3xl shadow-md p-6 flex items-center gap-3 h-32 min-h-32"
           >
             {menuOpen && (
               <input
