@@ -18,6 +18,7 @@ export default function Bella() {
   const [callStatus, setCallStatus] = useState('ready');   // 'ready' | 'calling' | 'in-call'
   const [messages, setMessages]     = useState([]);
   const [isChatOpen, setIsChatOpen] = useState(false);
+  const [voiceUnavailable, setVoiceUnavailable] = useState(false);
   const vapiRef = useRef(null);
   const chatRef = useRef(null);
 
@@ -78,6 +79,13 @@ export default function Bella() {
 
   // init Vapi
   useEffect(() => {
+    // Check for media device support
+    if (!navigator.mediaDevices || !navigator.mediaDevices.enumerateDevices) {
+      console.warn('MediaDevices API not supported. Voice features will be unavailable.');
+      setVoiceUnavailable(true);
+      return;
+    }
+
     const vapi = vapiRef.current = new Vapi(import.meta.env.VITE_VAPI_PUBLIC_KEY);
     // inject reminders
     vapi.on('call-start', async () => {
@@ -277,23 +285,67 @@ if (rems.length > 0) {
       }
     });
 
-    vapi.on('error', err => console.error(err));
+    vapi.on('error', err => {
+      console.error('Vapi error:', err);
+      // Check if it's a media device error
+      if (err.message && err.message.includes('enumerateDevices')) {
+        setVoiceUnavailable(true);
+      }
+      // Reset state on error
+      if (callStatus === 'calling') {
+        setCallStatus('ready');
+        setIsChatOpen(true); // Still allow chat access
+      }
+    });
     return () => vapi.removeAllListeners();
   }, [user, t]);
 
   // call controls
   const startCall = () => {
+    // If voice is unavailable, just open chat
+    if (voiceUnavailable || !vapiRef.current) {
+      setIsChatOpen(true);
+      return;
+    }
+
     setCallStatus('calling');
-    vapiRef.current.start(getAssistantId(), {});
+
+    // Add timeout fallback in case call doesn't start
+    const callTimeout = setTimeout(() => {
+      if (callStatus === 'calling') {
+        setCallStatus('ready');
+        setIsChatOpen(true); // Open chat even if call failed
+        console.warn('Call startup timed out, opening chat view');
+      }
+    }, 10000); // 10 second timeout
+
+    try {
+      vapiRef.current.start(getAssistantId(), {})
+        .then(() => {
+          clearTimeout(callTimeout);
+        })
+        .catch((error) => {
+          console.error('Vapi call failed to start:', error);
+          clearTimeout(callTimeout);
+          setCallStatus('ready');
+          setIsChatOpen(true); // Open chat even if call failed
+        });
+    } catch (error) {
+      console.error('Error starting Vapi call:', error);
+      clearTimeout(callTimeout);
+      setCallStatus('ready');
+      setIsChatOpen(true); // Open chat even if call failed
+    }
   };
   const endCall    = () => vapiRef.current.stop();
   const toggleCall = () => callStatus==='ready' ? startCall() : endCall();
 
   const Icon      = callStatus==='ready' ? FaPhone : FaPhoneSlash;
-  const callLabel =
-    callStatus==='ready'    ? t('Bella.talk')
-  : callStatus==='calling' ? t('Bella.calling')
-  :                          t('Bella.stop');
+  const callLabel = voiceUnavailable
+    ? t('Bella.textChat') || 'Text Chat'
+    : callStatus==='ready'    ? t('Bella.talk')
+    : callStatus==='calling' ? t('Bella.calling')
+    :                          t('Bella.stop');
 
   const btnClass = `
     inline-flex items-center justify-center
@@ -340,6 +392,11 @@ if (rems.length > 0) {
           <Icon className="mr-2 text-xl" />
           {callLabel}
         </button>
+        {voiceUnavailable && (
+          <div className="mt-2 p-2 bg-yellow-100 dark:bg-yellow-800 text-yellow-800 dark:text-yellow-200 rounded text-sm text-center max-w-xs">
+            {t('Bella.voiceUnavailable') || 'Voice features unavailable. Using text chat only.'}
+          </div>
+        )}
         <button
           onClick={() => setBellaFullscreen(!bellaFullscreen)}
           className={`${btnClass} mt-2`}
