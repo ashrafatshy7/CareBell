@@ -20,17 +20,40 @@ app.use(cors({
 app.use(express.json());
 
 // MongoDB connection (only if URI is provided)
+let mongoConnected = false;
+let connectionPromise = null;
+
 if (process.env.MONGODB_URI) {
-  mongoose.connect(process.env.MONGODB_URI, {
+  connectionPromise = mongoose.connect(process.env.MONGODB_URI, {
     serverSelectionTimeoutMS: 10000,
     bufferCommands: false,
     maxPoolSize: 1
-  }).then(() => {
-    console.log('MongoDB connected');
-  }).catch(err => {
-    console.error('MongoDB connection error:', err);
   });
+
+  connectionPromise
+    .then(() => {
+      console.log('MongoDB connected');
+      mongoConnected = true;
+    })
+    .catch(err => {
+      console.error('MongoDB connection error:', err);
+      mongoConnected = false;
+    });
 }
+
+// Middleware to ensure DB connection before routes
+app.use(async (req, res, next) => {
+  if (connectionPromise && !mongoConnected) {
+    try {
+      await connectionPromise;
+      mongoConnected = true;
+    } catch (err) {
+      console.error('DB connection failed:', err);
+      // Continue without DB connection
+    }
+  }
+  next();
+});
 
 // Load users route if possible
 let userRoute;
@@ -43,6 +66,17 @@ try {
   console.log('Users route not loaded, using fallback');
   // Fallback users route
   app.get('/users', (req, res) => {
+    if (!mongoConnected) {
+      return res.status(503).json({
+        error: 'Database not connected',
+        message: 'MongoDB connection is not ready. Please try again or contact support.',
+        fallback_data: [
+          { id: 1, name: 'Test User 1', email: 'test1@example.com' },
+          { id: 2, name: 'Test User 2', email: 'test2@example.com' }
+        ]
+      });
+    }
+
     res.json([
       { id: 1, name: 'Test User 1', email: 'test1@example.com' },
       { id: 2, name: 'Test User 2', email: 'test2@example.com' }
