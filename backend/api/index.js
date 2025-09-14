@@ -56,47 +56,37 @@ app.use((req, res, next) => {
   next();
 });
 
-// ─── MongoDB Connection with Retry & Initial Promise ──────────────────────────
+// ─── MongoDB Connection for Serverless ─────────────────────────────────────────
 const MONGO_OPTIONS = {
-  serverSelectionTimeoutMS: 5_000, // fail if we can’t connect in 5s
-  bufferCommands: false           // immediately throw if not connected
+  serverSelectionTimeoutMS: 10_000, // allow more time for serverless cold starts
+  bufferCommands: false,
+  maxPoolSize: 1, // minimize connections for serverless
+  socketTimeoutMS: 45000, // close sockets after 45 seconds of inactivity
+  family: 4 // use IPv4, skip trying IPv6
 };
 
 mongoose.set('bufferCommands', false);
 
+// Simple connection for Vercel (no retry logic needed)
 let connectionPromise;
-async function connectWithRetry() {
-  try {
-    connectionPromise = mongoose.connect(process.env.MONGODB_URI, MONGO_OPTIONS);
-    await connectionPromise;
-    console.log('✅ MongoDB connected');
-  } catch (err) {
-    console.error('❌ MongoDB connection error:', err);
-    setTimeout(connectWithRetry, 5_000);
-  }
+if (process.env.MONGODB_URI) {
+  connectionPromise = mongoose.connect(process.env.MONGODB_URI, MONGO_OPTIONS);
+  connectionPromise
+    .then(() => console.log('✅ MongoDB connected'))
+    .catch(err => console.error('❌ MongoDB connection error:', err));
 }
 
-mongoose.connection.on('error', err =>
-  console.error('MongoDB runtime error:', err)
-);
-mongoose.connection.on('disconnected', () => {
-  console.warn('MongoDB disconnected — retrying…');
-  connectWithRetry();
-});
-
-connectWithRetry();
-
-// ─── Middleware to wait for the first connection ───────────────────────────────
+// ─── Middleware to wait for database connection ───────────────────────────────
 app.use(async (req, res, next) => {
-  try {
-    if (connectionPromise) {
+  if (connectionPromise) {
+    try {
       await connectionPromise;
+    } catch (err) {
+      console.error('DB not ready, rejecting request:', err);
+      return res.status(503).json({ error: 'Service Unavailable - Database not connected' });
     }
-    next();
-  } catch (err) {
-    console.error('DB not ready, rejecting request:', err);
-    res.status(503).json({ error: 'Service Unavailable - Database not connected' });
   }
+  next();
 });
 
 // ─── Socket.IO Integration ────────────────────────────────────────────────────
@@ -125,7 +115,10 @@ app.get('/', (_req, res) => {
   res.send('API is live! 🚀');
 });
 
-// ─── Start server locally ─────────────────────────────────────────────────────
+// ─── Export for Vercel serverless function ──────────────────────────────────
+module.exports = app;
+
+// ─── Start server locally for development ────────────────────────────────────
 if (require.main === module) {
   const PORT = process.env.PORT || 4443;
 
@@ -152,5 +145,3 @@ if (require.main === module) {
 
   startServer();
 }
-
-module.exports = server;
