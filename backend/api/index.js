@@ -6,22 +6,14 @@ const path = require('path');
 
 const app = express();
 
-// More permissive CORS configuration for debugging
 app.use(cors({
-  origin: true, // Allow all origins for now
-  credentials: false,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-with'],
-  optionsSuccessStatus: 200 // Some legacy browsers choke on 204
+  origin: "*",
+  methods: ["GET","POST","PUT","PATCH","DELETE","OPTIONS"],
+  allowedHeaders: ["Content-Type","Authorization","x-requested-with"],
+  maxAge: 86400
 }));
 
-// Explicit OPTIONS handling
-app.options('*', (req, res) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-requested-with');
-  res.sendStatus(200);
-});
+app.options("*", cors());
 
 app.use(express.json());
 
