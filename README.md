@@ -1,80 +1,131 @@
 # CareBell
 
-CareBell is a voice‑enabled companion app built with a React/Vite frontend, an Express/MongoDB backend, and an optional Deno-based signaling server for peer‑to‑peer video calls.
+CareBell is an elder care app designed for tablets. It helps elderly people manage their daily routines, track their health, and stay connected with family and friends. The interface is simple and uses large buttons and text that are easy to see and use.
 
-## Requirements
+## What CareBell does
 
-- **Node.js** (current LTS recommended)
-- **MongoDB** instance and connection string
-  !`It’s important that MongoDB will have at least one user already defined`
-- **Deno** runtime (required for Meet-With-Friends)
-- Environment variables:
-  - `MONGODB_URI` – MongoDB connection string
-  - `OPENAI_KEY` – API key for the Bella reminders route, requires OpenAI public key
-  - Optional `PORT` to override the backend port (defaults to `4443`)
-  - Frontend Vite variables (`VITE_VAPI_PUBLIC_KEY`, `VITE_VAPI_ASSISTANT_ID_EN`, `VITE_VAPI_ASSISTANT_ID_DE`, `VITE_VAPI_ASSISTANT_ID_HE`)
-    The VAPI Environment keys refer to VAPI.AI public api key and assistant keys
-  - Optional TTS model paths (`TTS_MODEL_EN`, `TTS_MODEL_DE`, …), each one is assigned to a different TTS model in backend/tts/models/
+This app was built specifically for older adults who want to stay independent but need some help organizing their day. Everything is designed to work on tablets with big, clear interfaces that don't require tiny finger movements or complicated navigation.
 
-## Setup
 
-### Clone the repository
 
-```bash
-git clone <repo-url>
-cd CareBell
-```
+### Bella - Your AI Helper
 
-### Backend
+Bella is the voice assistant that lives in the app. You can talk to her like you would talk to a real person. She helps with:
 
-```bash
-cd backend
-npm install
-# create .env with MONGODB_URI and OPENAI_KEY
-npm run dev
-```
+- Answering questions about your daily routine
+- Keeping track of things you tell her
+- Speaking in English, German, or Hebrew
 
-The server starts on the specified `PORT` (default `4443`) and connects to MongoDB with retry logic. Socket.IO is available on the same port.
 
-### Frontend
 
-```bash
-cd CareBell
-npm install
-# create .env with your Vapi keys
-npm run dev
-```
+### Medication Tracking
 
-The app is served by Vite on port `5173` by default.
+Keep track of all your pills and when to take them:
 
-### Deno signaling server (optional)
+- See which medications you need to take today
+- Check when you took your last dose
+- Get reminders when it's time for the next dose
+- Track how well you're keeping up with your medication schedule
 
-```bash
-cd deno-signaling
-deno task dev
-```
+### Rooms
 
-This WebSocket server routes WebRTC signaling messages. The frontend reads its URL from `src/shared/config.js` (`P2P_SIGNALING_URL`).
+Think of these like different areas in your house, but digital:
 
-### Configuration
+- Create different spaces for different activities
+- Invite family members to join your rooms
+- Have private spaces just for you
+- Connect with others when you want company
 
-Edit `src/shared/config.js` if your backend API or signaling server runs at a different address.
+### Contacts
 
-## Project Structure
+Stay in touch with the people who matter:
 
-```
-CareBell/
-├── CareBell/           # React frontend
-├── backend/            # Express/MongoDB API
-├── deno-signaling/     # Deno WebSocket server
-└── project/            # Additional assets (video, QR codes)
-```
+- Large, easy-to-read contact list
+- Big buttons to call or message people
+- Special section for emergency contacts
+- Quick access to family and friends
 
-## External APIs and Services
+### Food and Nutrition
 
-- **MongoDB** – persistence via Mongoose
-- **OpenAI GPT‑3.5** – used in `/bellaReminders/analyze`
-- **Tagesschau API** – news articles
-- **OpenWeatherMap API** – weather forecasts
-- **Piper TTS** – local text‑to‑speech via `/tts`
-- **Vapi** – browser-based voice assistant
+Plan your meals and track what you eat:
+
+- Keep track of meals and snacks
+- Note any allergies or foods you can't eat
+- Get suggestions for healthy meals
+- See how you're doing with nutrition
+
+### Exercise and Health
+
+Stay active and healthy:
+
+- Simple exercise routines you can do at home
+- Track your daily activity
+- Get tips for staying healthy
+- Gentle reminders to move around during the day
+
+### News and Weather
+
+Stay informed about what's happening:
+
+- Easy-to-read news stories
+- Current weather and what to expect tomorrow
+- Local community information
+- Large text that's comfortable to read
+
+### Reminders
+
+Never forget important things:
+
+- Set up reminders for appointments, calls, or tasks
+- The app learns your routine and suggests helpful reminders
+- Get notifications in different ways - sounds, pop-ups, or voice
+- Set up repeating reminders for things you do every day or week
+
+### Video Calls
+
+See your family and friends face-to-face:
+
+- Simple video calling with big, clear buttons
+- Join family video chats
+- Share your screen to show photos or other things
+- Easy to use even if you're not tech-savvy
+
+## Who this app is for
+
+CareBell was made for elderly people who want to:
+
+- Stay organized with their daily routines
+- Keep track of their health and medications
+- Stay connected with family without complicated technology
+- Maintain their independence while having support when needed
+
+It's also helpful for family members who want to:
+
+- Check in on their elderly relatives
+- Help them stay organized from a distance
+- Make sure they're taking their medications properly
+
+## Technical details
+
+The app runs on tablets and uses:
+
+- A simple web interface that loads quickly
+- Voice technology for natural conversations
+- A database to remember your information
+- Real-time updates so family can stay connected
+- Works in multiple languages
+
+## Device requirements
+
+This app works best on tablets because:
+
+- The screen is big enough for large, readable text
+- Touch controls are sized for older hands
+- Voice features work well with tablet microphones
+- Battery life is good for all-day use
+
+*Screenshots showing the app in action will be added here*
+
+---
+
+CareBell isn't trying to replace human care - it's meant to support it. The goal is to help elderly people feel more confident and independent in their daily lives while keeping them connected to the people who care about them.
