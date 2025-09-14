@@ -2,6 +2,7 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const path = require('path');
 
 const app = express();
 
@@ -55,42 +56,61 @@ app.use(async (req, res, next) => {
   next();
 });
 
-// Load users route if possible
-let userRoute;
+// Load all routes with error handling
+let userRoute, contactRoute, foodRoute, medicationRoute, bellaReminderRoute;
+let newsRoute, exercisesRoute, reminderRoute, roomsRoute, ttsRoute;
+
 try {
   userRoute = require('../routes/users');
-  if (userRoute) {
-    app.use('/users', userRoute);
-  }
+  contactRoute = require('../routes/contacts');
+  foodRoute = require('../routes/foods');
+  medicationRoute = require('../routes/medications');
+  bellaReminderRoute = require('../routes/bellaReminders');
+  newsRoute = require('../routes/news');
+  exercisesRoute = require('../routes/exercises');
+  reminderRoute = require('../routes/reminders');
+  roomsRoute = require('../routes/rooms');
+  ttsRoute = require('../routes/tts');
 } catch (error) {
-  console.log('Users route not loaded, using fallback');
-  // Fallback users route
-  app.get('/users', (req, res) => {
-    if (!mongoConnected) {
-      return res.status(503).json({
-        error: 'Database not connected',
-        message: 'MongoDB connection is not ready. Please try again or contact support.',
-        fallback_data: [
-          { id: 1, name: 'Test User 1', email: 'test1@example.com' },
-          { id: 2, name: 'Test User 2', email: 'test2@example.com' }
-        ]
-      });
-    }
-
-    res.json([
-      { id: 1, name: 'Test User 1', email: 'test1@example.com' },
-      { id: 2, name: 'Test User 2', email: 'test2@example.com' }
-    ]);
-  });
+  console.error('Error loading routes:', error);
 }
+
+// Mount routes
+if (userRoute) app.use('/users', userRoute);
+if (contactRoute) app.use('/contacts', contactRoute);
+if (foodRoute) app.use('/foods', foodRoute);
+if (medicationRoute) app.use('/medications', medicationRoute);
+if (bellaReminderRoute) app.use('/bellaReminders', bellaReminderRoute);
+if (newsRoute) app.use('/news', newsRoute);
+if (exercisesRoute) app.use('/exercises', exercisesRoute);
+if (reminderRoute) app.use('/reminders', reminderRoute);
+if (roomsRoute) app.use('/rooms', roomsRoute);
+if (ttsRoute) app.use('/tts', ttsRoute);
+
+// Static resources
+app.use('/resources', express.static(path.join(__dirname, '..', 'resources')));
 
 // Basic endpoints
 app.get('/', (req, res) => {
+  const availableRoutes = [];
+  if (userRoute) availableRoutes.push('/users');
+  if (contactRoute) availableRoutes.push('/contacts');
+  if (foodRoute) availableRoutes.push('/foods');
+  if (medicationRoute) availableRoutes.push('/medications');
+  if (bellaReminderRoute) availableRoutes.push('/bellaReminders');
+  if (newsRoute) availableRoutes.push('/news');
+  if (exercisesRoute) availableRoutes.push('/exercises');
+  if (reminderRoute) availableRoutes.push('/reminders');
+  if (roomsRoute) availableRoutes.push('/rooms');
+  if (ttsRoute) availableRoutes.push('/tts');
+  availableRoutes.push('/health');
+
   res.json({
     message: 'CareBell API is live! 🚀',
     timestamp: new Date().toISOString(),
     version: '2.0',
-    endpoints: ['/users', '/health']
+    mongodb: mongoConnected ? 'connected' : 'disconnected',
+    endpoints: availableRoutes
   });
 });
 
