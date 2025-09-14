@@ -6,17 +6,22 @@ const path = require('path');
 
 const app = express();
 
-// CORS configuration
+// More permissive CORS configuration for debugging
 app.use(cors({
-  origin: [
-    'http://localhost:5173',
-    'http://localhost:3000',
-    'https://care-bell-10uozhrlo-ashrafs-projects-d4a3a57b.vercel.app'
-  ],
+  origin: true, // Allow all origins for now
   credentials: false,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-with'],
+  optionsSuccessStatus: 200 // Some legacy browsers choke on 204
 }));
+
+// Explicit OPTIONS handling
+app.options('*', (req, res) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Content-Type, Authorization, x-requested-with');
+  res.sendStatus(200);
+});
 
 app.use(express.json());
 
