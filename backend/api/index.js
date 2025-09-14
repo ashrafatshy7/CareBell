@@ -29,8 +29,32 @@ const io     = new Server(server, {
 app.set('io', io);
 
 
-app.use(cors({ origin: '*', credentials: false }));
+// CORS configuration for both development and production
+const corsOptions = {
+  origin: [
+    'http://localhost:5173',  // Vite dev server
+    'http://localhost:3000',  // React dev server
+    'http://localhost:5000',  // Alternative dev port
+    'https://care-bell-10uozhrlo-ashrafs-projects-d4a3a57b.vercel.app', // Production frontend
+    // Add your production frontend domain here when deployed
+  ],
+  credentials: false,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'x-requested-with']
+};
+
+app.use(cors(corsOptions));
+
+// Handle preflight requests
+app.options('*', cors(corsOptions));
+
 app.use(express.json());
+
+// Debug middleware to log requests
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path} - Origin: ${req.get('origin') || 'none'}`);
+  next();
+});
 
 // ─── MongoDB Connection with Retry & Initial Promise ──────────────────────────
 const MONGO_OPTIONS = {
@@ -65,11 +89,13 @@ connectWithRetry();
 // ─── Middleware to wait for the first connection ───────────────────────────────
 app.use(async (req, res, next) => {
   try {
-    await connectionPromise;
+    if (connectionPromise) {
+      await connectionPromise;
+    }
     next();
   } catch (err) {
     console.error('DB not ready, rejecting request:', err);
-    res.status(503).json({ error: 'Service Unavailable' });
+    res.status(503).json({ error: 'Service Unavailable - Database not connected' });
   }
 });
 
