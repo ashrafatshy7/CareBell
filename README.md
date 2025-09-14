@@ -5,7 +5,6 @@ CareBell is an elder care app designed for tablets. It helps elderly people mana
 ## What CareBell does
 
 This app was built specifically for older adults who want to stay independent but need some help organizing their day. Everything is designed to work on tablets with big, clear interfaces that don't require tiny finger movements or complicated navigation.
-
 <img width="995" height="587" alt="image" src="https://github.com/user-attachments/assets/2ad62f56-f41e-46a0-a8f9-d067a765afad" />
 
 
@@ -16,7 +15,7 @@ Bella is the voice assistant that lives in the app. You can talk to her like you
 - Answering questions about your daily routine
 - Keeping track of things you tell her
 - Speaking in English, German, or Hebrew
-
+<img width="995" height="587" alt="image" src="https://github.com/user-attachments/assets/0b07d2ba-499a-4b46-b622-325ecbdbe06c" />
 
 
 ### Medication Tracking
@@ -27,15 +26,7 @@ Keep track of all your pills and when to take them:
 - Check when you took your last dose
 - Get reminders when it's time for the next dose
 - Track how well you're keeping up with your medication schedule
-
-### Rooms
-
-Think of these like different areas in your house, but digital:
-
-- Create different spaces for different activities
-- Invite family members to join your rooms
-- Have private spaces just for you
-- Connect with others when you want company
+<img width="995" height="587" alt="image" src="https://github.com/user-attachments/assets/8fbd7267-ca3e-4f6f-84dc-f57aaa9ba10d" />
 
 ### Contacts
 
@@ -46,6 +37,8 @@ Stay in touch with the people who matter:
 - Special section for emergency contacts
 - Quick access to family and friends
 
+<img width="995" height="587" alt="image" src="https://github.com/user-attachments/assets/2f7893b0-48bf-482c-a055-959df077804d" />
+
 ### Food and Nutrition
 
 Plan your meals and track what you eat:
@@ -54,6 +47,8 @@ Plan your meals and track what you eat:
 - Note any allergies or foods you can't eat
 - Get suggestions for healthy meals
 - See how you're doing with nutrition
+  <img width="995" height="587" alt="image" src="https://github.com/user-attachments/assets/8a175c33-11b0-4086-910b-646c620af710" />
+
 
 ### Exercise and Health
 
@@ -64,6 +59,9 @@ Stay active and healthy:
 - Get tips for staying healthy
 - Gentle reminders to move around during the day
 
+<img width="995" height="587" alt="image" src="https://github.com/user-attachments/assets/e400e86f-4747-4bfd-badc-545056fde0ca" />
+
+
 ### News and Weather
 
 Stay informed about what's happening:
@@ -72,15 +70,8 @@ Stay informed about what's happening:
 - Current weather and what to expect tomorrow
 - Local community information
 - Large text that's comfortable to read
+<img width="995" height="587" alt="image" src="https://github.com/user-attachments/assets/d2816955-3769-4eca-ac07-ed5bfab9812b" />
 
-### Reminders
-
-Never forget important things:
-
-- Set up reminders for appointments, calls, or tasks
-- The app learns your routine and suggests helpful reminders
-- Get notifications in different ways - sounds, pop-ups, or voice
-- Set up repeating reminders for things you do every day or week
 
 ### Video Calls
 
@@ -90,6 +81,9 @@ See your family and friends face-to-face:
 - Join family video chats
 - Share your screen to show photos or other things
 - Easy to use even if you're not tech-savvy
+<img width="995" height="587" alt="image" src="https://github.com/user-attachments/assets/21d4c8b1-860a-4bc3-9175-d314d3475b2b" />
+<img width="995" height="587" alt="Your paragraph text" src="https://github.com/user-attachments/assets/551c263f-5e6e-43d2-a1d8-1abbd437c08f" />
+
 
 ## Who this app is for
 
