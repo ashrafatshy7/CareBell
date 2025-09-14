@@ -6,6 +6,7 @@ CareBell is an elder care app designed for tablets. It helps elderly people mana
 
 This app was built specifically for older adults who want to stay independent but need some help organizing their day. Everything is designed to work on tablets with big, clear interfaces that don't require tiny finger movements or complicated navigation.
 
+<img width="995" height="587" alt="image" src="https://github.com/user-attachments/assets/2ad62f56-f41e-46a0-a8f9-d067a765afad" />
 
 
 ### Bella - Your AI Helper
